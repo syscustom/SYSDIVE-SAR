@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{535CE968-A886-412C-92C4-B3B01C6E3F8F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ROV.Nav</RootNamespace>
+    <AssemblyName>ROV.Nav</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Navigation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ROV.Joystick\ROV.Joystick.csproj">
+      <Project>{7F1DBCD4-1D21-4D78-AD51-A1C36C0F5772}</Project>
+      <Name>ROV.Joystick</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROV.Motor\ROV.Motor.csproj">
+      <Project>{F6EF2F1F-BC43-4C65-A3C6-F3F85523C07B}</Project>
+      <Name>ROV.Motor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROV.PIDLibrary\ROV.PIDLibrary.csproj">
+      <Project>{FD018F79-84DC-43DE-BD2C-ED0ADA777D73}</Project>
+      <Name>ROV.PIDLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROV.Serial\ROV.Serial.csproj">
+      <Project>{DB75EC97-70A8-45A2-A74F-906194AF0B4B}</Project>
+      <Name>ROV.Serial</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROV.XML\ROV.XML.csproj">
+      <Project>{5B229D69-772C-4DC5-843A-287DE8C35892}</Project>
+      <Name>ROV.XML</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

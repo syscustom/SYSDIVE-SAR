@@ -1,0 +1,131 @@
+﻿<Window x:Class="WpfApp1.frmSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+         Title="frmSettings" Height="600" Width="1024
+        "  WindowStyle="None" ResizeMode="NoResize" Background="Black" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+    <Grid>
+        <Grid HorizontalAlignment="Right" Height="600" Margin="758,0,0,0" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.562,0.736"   ShowGridLines="True" Background="#FF4F4A4A">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Blue"/>
+            <Border Grid.Row="4" Background="Black"/>
+            <Label x:Name="lbl_Home" Content="主 页" HorizontalAlignment="Center" Height="34" Margin="-15,39,-15,0" VerticalAlignment="Top" Width="72" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="0" MouseUp="Lbl_Home_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Select" Content="选 择" HorizontalAlignment="Center" Height="34" Margin="-15,41,-15,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="3" MouseUp="Lbl_Select_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+
+        </Grid>
+        <Grid HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0,0"   ShowGridLines="True" Background="#FF4F4A4A" Margin="0,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Red"/>
+            <Border Grid.Row="4" Background="Black"/>
+            <Label x:Name="lbl_Power" Content="电 源" HorizontalAlignment="Center" Height="34" Margin="-16,42,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Power_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Back" Content="后 退" HorizontalAlignment="Center" Height="34" Margin="-16,41,-18,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="3" MouseUp="Lbl_Back_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Image x:Name="imgUpArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="0.5,0.5" Grid.Row="1" MouseUp="ImgUpArrow_MouseUp">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="180"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <Image x:Name="imgDownArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" Grid.Row="2" MouseUp="ImgDownArrow_MouseUp"/>
+
+        </Grid>
+
+        <ListView x:Name="lstviewSettings" HorizontalAlignment="Left" Height="310" Margin="68,62,0,0" VerticalAlignment="Top" Width="310" BorderThickness="0" Background="Black" FontSize="18">
+            <ListView.Resources>
+                <Style TargetType="{x:Type GridViewColumnHeader}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <!-- 设置触发器 -->
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" Value="Blue"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter Property="Background" Value="Gray"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <MenuItem  Foreground="White" Header="传感器" FontSize="22" Width="290"/>
+            <MenuItem  Foreground="White" Header="导航" FontSize="22" Width="290"/>
+            <MenuItem  Foreground="White" Header="显示" FontSize="22" Width="290"/>
+        </ListView>
+        <Image x:Name="imgUpArrow_1" HorizontalAlignment="Left" Height="45" Margin="982,162,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="0.5,0.5" MouseUp="ImgUpArrow_1_MouseUp">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="180"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="imgDownArrow_1" HorizontalAlignment="Left" Height="45" Margin="982,282,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" MouseUp="ImgDownArrow_1_MouseUp"/>
+        <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Margin="42,0" Width="940"/>
+        <Label x:Name="lblMissions" Content="设 置" HorizontalAlignment="Left" Margin="75,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="155" Foreground="White" FontSize="26"/>
+    </Grid>
+</Window>

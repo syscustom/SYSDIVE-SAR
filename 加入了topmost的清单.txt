@@ -1,0 +1,10 @@
+MainWindows
+frmNavigaiton
+frmSonarDisplay
+frmMissions
+frmPower
+frmMarkers
+frmDiveLog
+frmStartDiveConfirmation
+frmTools
+frmSettings

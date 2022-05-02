@@ -1,0 +1,156 @@
+﻿<Window x:Class="WpfApp1.frmMarkerEdit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="frmMarkerEdit" Height="600" Width="1024"  WindowStyle="None" ResizeMode="NoResize" Background="Black" SizeChanged="Window_SizeChanged" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid>
+        <Grid HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0,0"   ShowGridLines="True" Background="#FF4F4A4A" Margin="0,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Red"/>
+            <Label x:Name="lbl_Power" Content="电 源" HorizontalAlignment="Center" Height="34" Margin="-15,41,-17,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Power_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Done" Content="确 认" HorizontalAlignment="Center" Height="34" Margin="-16,39,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="4" MouseUp="Lbl_Done_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Image x:Name="imgUpArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="0.5,0.5" Grid.Row="1" MouseUp="ImgUpArrow_MouseUp">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="180"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <Image x:Name="imgDownArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" Grid.Row="2" MouseUp="ImgDownArrow_MouseUp"/>
+            <Label x:Name="lbl_Cancel" Content="取 消" HorizontalAlignment="Center" Height="34" Margin="-16,42,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="3" MouseUp="Lbl_Cancel_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+
+        </Grid>
+        <Grid HorizontalAlignment="Right" Height="600" Margin="758,0,0,0" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.562,0.736"   ShowGridLines="True" Background="#FF4F4A4A">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Blue"/>
+
+            <Label x:Name="lbl_Home" Content="地 图 选 择" HorizontalAlignment="Center" Height="Auto" Margin="-38,44,-40,0" VerticalAlignment="Top" Width="Auto" RenderTransformOrigin="0.5,0.5" FontSize="20" Foreground="White" FontFamily="SimSun" Grid.Row="0" MouseUp="Lbl_Home_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_MinusTen" Content="- 10" HorizontalAlignment="Center" Height="34" Margin="-14,45,-14,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="1" MouseUp="Lbl_MinusTen_MouseUp" >
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_MinusOne" Content="- 1" HorizontalAlignment="Center" Height="34" Margin="-13,41,-15,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="2" MouseUp="Lbl_MinusOne_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_PlusOne" Content="+ 1" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="3" MouseUp="Lbl_PlusOne_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_PlusTen" Content="+ 10" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="4" MouseUp="Lbl_PlusTen_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+
+
+
+        </Grid>
+        <Label x:Name="lblMissions_Current_QA" Content="编 辑 标 记 点" HorizontalAlignment="Left" Margin="65,1,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="322" Foreground="White" FontSize="24"/>
+        <Label x:Name="lblName" Content="名 称：" HorizontalAlignment="Left" Height="35" Margin="66,44,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblNameInfo" Content="" HorizontalAlignment="Left" Height="35" Margin="66,80,0,0" VerticalAlignment="Top" Width="270" Foreground="White" FontSize="16"/>
+        <Label x:Name="lblLat" Content="纬 度：" HorizontalAlignment="Left" Height="35" Margin="68,116,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblLatDeg" Content="00" HorizontalAlignment="Left" Height="45" Margin="70,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatDegUnit" Content="°" HorizontalAlignment="Left" Height="45" Margin="115,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatMin" Content="00" HorizontalAlignment="Left" Height="45" Margin="138,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatMinUnit" Content="'" HorizontalAlignment="Left" Height="45" Margin="184,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatSec1" Content="00" HorizontalAlignment="Left" Height="45" Margin="203,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatSecDot" Content="." HorizontalAlignment="Left" Height="45" Margin="248,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatSec2" Content="00" HorizontalAlignment="Left" Height="45" Margin="267,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatSecUnit" Content="''" HorizontalAlignment="Left" Height="45" Margin="313,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLatInfo" Content="N" HorizontalAlignment="Left" Height="45" Margin="340,152,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Margin="42,0" Width="940"/>
+        <Label x:Name="lblLng" Content="经 度：" HorizontalAlignment="Left" Height="35" Margin="68,200,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblLngDeg" Content="000" HorizontalAlignment="Left" Height="45" Margin="70,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngDegUnit" Content="°" HorizontalAlignment="Left" Height="45" Margin="133,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngMin" Content="00" HorizontalAlignment="Left" Height="45" Margin="156,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngMinUnit" Content="'" HorizontalAlignment="Left" Height="45" Margin="202,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngSec1" Content="00" HorizontalAlignment="Left" Height="45" Margin="221,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngSecDot" Content="." HorizontalAlignment="Left" Height="45" Margin="266,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngSec2" Content="00" HorizontalAlignment="Left" Height="45" Margin="285,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngSecUnit" Content="''" HorizontalAlignment="Left" Height="45" Margin="331,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblLngInfo" Content="E" HorizontalAlignment="Left" Height="45" Margin="358,239,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28" Background="#00000000"/>
+        <Label x:Name="lblDepth" Content="深 度：" HorizontalAlignment="Left" Height="35" Margin="70,292,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblDepthInfo" Content="00.0" HorizontalAlignment="Left" Height="40" Margin="70,330,0,0" VerticalAlignment="Top" Width="Auto" Foreground="White" FontSize="28"/>
+        <Label x:Name="lblType" Content="类 型：" HorizontalAlignment="Left" Height="37" Margin="70,375,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblTypeInfo" Content="" HorizontalAlignment="Left" Height="40" Margin="70,415,0,0" VerticalAlignment="Top" Width="270" Foreground="White" FontSize="20"/>
+
+    </Grid>
+</Window>

@@ -1,0 +1,470 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4A65C96F-A13E-4CA2-889E-5D241E7285D5}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>WpfApp1</RootNamespace>
+    <AssemblyName>WpfApp1</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>WpfApp1.App</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AxInterop.VIDEOCAPXLib">
+      <HintPath>..\VideoCapX\AxInterop.VIDEOCAPXLib.dll</HintPath>
+    </Reference>
+    <Reference Include="BlueView.Sonar">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\BlueView\ProViewer 4.2.0.8521\BlueView.Sonar.dll</HintPath>
+    </Reference>
+    <Reference Include="BlueView.Unit">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\BlueView\ProViewer 4.2.0.8521\BlueView.Unit.dll</HintPath>
+    </Reference>
+    <Reference Include="BlueView.Wpf">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\BlueView\ProViewer 4.2.0.8521\BlueView.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.VIDEOCAPXLib">
+      <HintPath>..\VideoCapX\Interop.VIDEOCAPXLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="SDK">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\BlueView\ProViewer 4.2.0.8521\SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Device" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.InteropServices.WindowsRuntime" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CSVFileHelper.cs" />
+    <Compile Include="CustomMarkers\WayPointMarkerActive.xaml.cs">
+      <DependentUpon>WayPointMarkerActive.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DVL.cs" />
+    <Compile Include="frmDisplaySettings.xaml.cs">
+      <DependentUpon>frmDisplaySettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmDiveLog.xaml.cs">
+      <DependentUpon>frmDiveLog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmDiveLogRemoveConfirmation.xaml.cs">
+      <DependentUpon>frmDiveLogRemoveConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmDiveLogReplay.xaml.cs">
+      <DependentUpon>frmDiveLogReplay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmExitConfirmation.xaml.cs">
+      <DependentUpon>frmExitConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMapCoordinatePicker.xaml.cs">
+      <DependentUpon>frmMapCoordinatePicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMarkerEdit.xaml.cs">
+      <DependentUpon>frmMarkerEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMarkers.xaml.cs">
+      <DependentUpon>frmMarkers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMarkersRemoveConfirmation.xaml.cs">
+      <DependentUpon>frmMarkersRemoveConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMicronDST.xaml.cs">
+      <DependentUpon>frmMicronDST.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMissionRemoveConfirmation.xaml.cs">
+      <DependentUpon>frmMissionRemoveConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmMissions.xaml.cs">
+      <DependentUpon>frmMissions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmNavigationSettings.xaml.cs">
+      <DependentUpon>frmNavigationSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmPower.xaml.cs">
+      <DependentUpon>frmPower.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmPowerOffConfirmation.xaml.cs">
+      <DependentUpon>frmPowerOffConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmSensorSettings.xaml.cs">
+      <DependentUpon>frmSensorSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmStartDiveConfirmation.xaml.cs">
+      <DependentUpon>frmStartDiveConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmStopDiveConfirmation.xaml.cs">
+      <DependentUpon>frmStopDiveConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmVideo.xaml.cs">
+      <DependentUpon>frmVideo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Globalcs.cs" />
+    <Compile Include="NavCommUserControl.xaml.cs">
+      <DependentUpon>NavCommUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Navigation.cs" />
+    <Compile Include="SelectXMLData.cs" />
+    <Compile Include="WayPoint.cs" />
+    <Compile Include="Windows\Message.xaml.cs">
+      <DependentUpon>Message.xaml</DependentUpon>
+    </Compile>
+    <Page Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Controls\TrolleyTooltip.xaml.cs" />
+    <Compile Include="CustomMarkers\Circle.xaml.cs">
+      <DependentUpon>Circle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomMarkers\CircleVisual.cs" />
+    <Compile Include="CustomMarkers\Cross.xaml.cs" />
+    <Compile Include="CustomMarkers\CustomMarkerDemo.xaml.cs" />
+    <Compile Include="CustomMarkers\CustomMarkerRed.xaml.cs" />
+    <Compile Include="CustomMarkers\Test.xaml.cs" />
+    <Compile Include="Source\DemoStuff.cs" />
+    <Compile Include="Source\Map.cs" />
+    <Page Include="Controls\TrolleyTooltip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomMarkers\Circle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomMarkers\Cross.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomMarkers\CustomMarkerDemo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomMarkers\CustomMarkerRed.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomMarkers\Test.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomMarkers\WayPointMarkerActive.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="frmDisplaySettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmDiveLog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmDiveLogRemoveConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmDiveLogReplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmExitConfirmation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="frmMapCoordinatePicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmMarkerEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmMarkers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmMarkersRemoveConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmMicronDST.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmMissionRemoveConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmMissions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmNavigation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmNavigationSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmPower.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmPowerOffConfirmation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="frmSensorSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmSonarDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmStartDiveConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmStopDiveConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmTools.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="frmVideo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="frmNavigation.xaml.cs">
+      <DependentUpon>frmNavigation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmSettings.xaml.cs">
+      <DependentUpon>frmSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmSonarDisplay.xaml.cs">
+      <DependentUpon>frmSonarDisplay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmTools.xaml.cs">
+      <DependentUpon>frmTools.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="NavCommUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\Message.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Resource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AppContainer\AppContainers.csproj">
+      <Project>{e267628f-fff2-4547-aaec-bda6a0a85016}</Project>
+      <Name>AppContainers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GMap.NET.Core\GMap.NET.Core.csproj">
+      <Project>{d0c39d9d-bed0-418b-9a5e-713176caf40c}</Project>
+      <Name>GMap.NET.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GMap.NET.WindowsForms\GMap.NET.WindowsForms.csproj">
+      <Project>{e06def77-f933-42fb-afd7-db2d0d8d6a98}</Project>
+      <Name>GMap.NET.WindowsForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GMap.NET.WindowsPresentation\GMap.NET.WindowsPresentation.csproj">
+      <Project>{644fe7d4-0184-400f-b2d7-99cb41360658}</Project>
+      <Name>GMap.NET.WindowsPresentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProViewer4.Models\ProViewer4.Models.csproj">
+      <Project>{d7c3da6d-2a98-48a9-9188-0f03a7173925}</Project>
+      <Name>ProViewer4.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROV.Serial\ROV.Serial.csproj">
+      <Project>{db75ec97-70a8-45a2-a74f-906194af0b4b}</Project>
+      <Name>ROV.Serial</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SARService\SARService.csproj">
+      <Project>{84d9c9d8-ef19-45d9-b114-58770829785b}</Project>
+      <Name>SARService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XDA\Xsens_Device_API.csproj">
+      <Project>{f9593854-6aa8-4321-8f8b-e5a749851e05}</Project>
+      <Name>Xsens_Device_API</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Image1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Down-Arrow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CustomMarkers\bigMarkerGreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CustomMarkers\red-dot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CustomMarkers\WayPointMarker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CustomMarkers\WayPointMarkerActive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Resource Include="Resources\Warning.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Include="Resources\DVL_Icon_RED.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\DVL_Icon_YEL.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\DVL_Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GNSS_Icon_YEL.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GNSS_Icon_RED.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GNSS_Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Sonar_Icon_RED.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Sonar_Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Sonar_Icon_BLK.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VIDEOCAPXLib">
+      <Guid>{912FB004-DD9A-11D3-BD8D-DAAFCB8D9378}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

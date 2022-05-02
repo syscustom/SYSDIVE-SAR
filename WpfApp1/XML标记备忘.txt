@@ -1,0 +1,8 @@
+  <WayPoint>
+    <ID>1</ID>
+    <Title>wp4</Title> 名称
+    <Lat>39.065</Lat>  纬度
+    <Lng>117.075</Lng> 经度
+    <Depth>3.3</Depth> 深度
+    <Type>2</Type>     类型 1=WayPoint 2=Target
+  </WayPoint>

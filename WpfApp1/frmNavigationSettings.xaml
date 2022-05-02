@@ -1,0 +1,99 @@
+﻿<Window x:Class="WpfApp1.frmNavigationSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+         Title="frmNavigationSettings" Height="600" Width="1024
+        "  WindowStyle="None" ResizeMode="NoResize" Background="Black" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+    <Grid>
+        <Grid HorizontalAlignment="Right" Height="600" Margin="758,0,0,0" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.562,0.736"   ShowGridLines="True" Background="#FF4F4A4A">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Blue"/>
+            <Border Grid.Row="3" Background="Black"/>
+            <Border Grid.Row="4" Background="Black"/>
+            <Label x:Name="lbl_Home" Content="主 页" HorizontalAlignment="Center" Height="34" Margin="-15,39,-15,0" VerticalAlignment="Top" Width="72" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="0" MouseUp="Lbl_Home_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_GNSS" Content="定 位" HorizontalAlignment="Center" Height="34" Margin="-12,43,-12,0" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="1" MouseUp="Lbl_GNSS_MouseUp" >
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+
+
+
+        </Grid>
+        <Grid HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0,0"   ShowGridLines="True" Background="#FF4F4A4A" Margin="0,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Red"/>
+            <Border Grid.Row="2" Background="Black"/>
+            <Border Grid.Row="3" Background="Black"/>
+            <Border Grid.Row="4" Background="Black"/>
+            <Label x:Name="lbl_Power" Content="电 源" HorizontalAlignment="Center" Height="34" Margin="-16,42,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Power_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+        </Grid>
+        <Grid HorizontalAlignment="Left" Height="115" Margin="735,122,0,0" VerticalAlignment="Top" Width="240" Background="#FF4F4A4A">
+            <Label x:Name="lblGNSSMode" Content="定位系统" HorizontalAlignment="Left" Height="43" Margin="6,5,0,0" VerticalAlignment="Top" Width="130"  FontSize="24" Foreground="White"/>
+            <Label x:Name="lblGNSSSwitch" Content="内置/外置" HorizontalAlignment="Left" Height="39" Margin="9,58,0,0" VerticalAlignment="Top" Width="121"  FontSize="24" Foreground="White"/>
+        </Grid>
+        <Label x:Name="lbl_Back" Content="后 退" HorizontalAlignment="Center" Height="34" Margin="-16,161,966,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Back_MouseUp">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="90"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Label x:Name="lbl_MapRotation" Content="地 图" HorizontalAlignment="Center" Height="34" Margin="968,286,-14,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="lbl_MapRotation_MouseUp" >
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-90"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Grid HorizontalAlignment="Left" Height="115" Margin="735,245,0,0" VerticalAlignment="Top" Width="240" Background="#FF4F4A4A">
+            <Label x:Name="lblMapRotaionInfo" Content="指向模式" HorizontalAlignment="Left" Height="43" Margin="6,5,0,0" VerticalAlignment="Top" Width="130"  FontSize="24" Foreground="White"/>
+            <Label x:Name="lblNorthDiver" Content="正北/潜水员" HorizontalAlignment="Left" Height="39" Margin="9,58,0,0" VerticalAlignment="Top" Width="151"  FontSize="24" Foreground="White"/>
+        </Grid>
+
+    </Grid>
+</Window>

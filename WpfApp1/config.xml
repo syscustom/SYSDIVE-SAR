@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <MissionFile value="">  
+  </MissionFile >
+
+  <SonarSwitch value="1">
+  </SonarSwitch >
+
+  <SonarType value="2">
+  </SonarType >
+  
+  <VisionSwitch value="0">
+  </VisionSwitch >
+
+  <NavTelemetry value="COM22">
+  </NavTelemetry>
+
+  <GPSPORT value="COM5">
+  </GPSPORT>
+
+  <GNSSMode value="0">
+  </GNSSMode>
+
+  <EXTPORT value="COM18">
+  </EXTPORT>
+
+  <BATPORT value="COM1">
+  </BATPORT>
+
+  <AUXPORT value="COM7">
+  </AUXPORT>
+
+  <RecordSamplingRate value ="2">
+  </RecordSamplingRate>
+
+  <DepthZero value="0.0">
+  </DepthZero>
+
+  <DepthZeroSwitch value="0">
+  </DepthZeroSwitch>
+
+  <HeadingZero value="0.0">
+  </HeadingZero>
+
+  <HeadingZeroSwitch value="0">
+  </HeadingZeroSwitch>
+
+  <BrightLevel value="3">
+  </BrightLevel>
+  
+  <MapNorth value="0">
+  </MapNorth>
+  
+  <SonarDemoShow value="0">
+  </SonarDemoShow>
+  
+  <DefaultLat value="39.0565">
+  </DefaultLat>
+  
+  <DefaultLng value="117.0606">
+  </DefaultLng>
+
+  <ServiceMonitor value="0">
+  </ServiceMonitor>
+
+  <MountDVL value="0">
+  </MountDVL>
+  
+  <DVLPORT value="COM6">
+  </DVLPORT>
+
+  <MountVision value="0">
+  </MountVision>
+
+  <FluidDensity value="997.0">
+  </FluidDensity>
+
+</Configuration>
