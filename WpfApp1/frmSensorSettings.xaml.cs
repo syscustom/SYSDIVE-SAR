@@ -42,6 +42,11 @@ namespace WpfApp1
             if (GlobalNavigation.nav1.DepthZeroSwitch == true)
                 lblDepthOffsetSwitch.Content = "已标定";
 
+            if (GlobalNavigation.nav1.HeadingZeroSwitch == false)
+                lblHeadingOffsetSwitch.Content = "未标定";
+            if (GlobalNavigation.nav1.HeadingZeroSwitch == true)
+                lblHeadingOffsetSwitch.Content = "已标定";
+
             tmrButtonCheck.Tick += new EventHandler(tmrButtonCheck_Tick);
             tmrButtonCheck.Interval = TimeSpan.FromMilliseconds(5);
             tmrButtonCheck.Start();
@@ -184,8 +189,9 @@ namespace WpfApp1
                 if (GlobalUpBoard.GPIOLevel[6] == 1 && GlobalUpBoard.ButtonState[6] == true)
                     GlobalUpBoard.ButtonState[6] = false;
 
-                if (GlobalUpBoard.GPIOLevel[7] == 0 && GlobalUpBoard.ButtonState[7] == false)
+                if (GlobalUpBoard.GPIOLevel[7] == 0 && GlobalUpBoard.ButtonState[7] == false) //Pressed Heading Button
                 {
+                    Heading_Press();
                     GlobalUpBoard.ButtonState[7] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[7] == 1 && GlobalUpBoard.ButtonState[7] == true)
@@ -213,6 +219,27 @@ namespace WpfApp1
             this.Close();
         }
 
+        private void Lbl_Heading_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Heading_Press();
+        }
 
+        private void Heading_Press()
+        {
+            if (GlobalNavigation.nav1.HeadingZeroSwitch)
+            {
+                GlobalNavigation.nav1.HeadingZeroSwitch = false;
+                lblHeadingOffsetSwitch.Content = "未标定";
+                SelectXMLData.SaveConfiguration("HeadingZeroSwitch", "value", "0");
+            }
+            else
+            {
+                GlobalNavigation.nav1.HeadingZeroSwitch = true;
+                lblHeadingOffsetSwitch.Content = "已标定";
+                GlobalNavigation.nav1.HeadingZero = GlobalNavigation.nav1.GetHeading();
+                SelectXMLData.SaveConfiguration("HeadingZeroSwitch", "value", "1");
+                SelectXMLData.SaveConfiguration("HeadingZero", "value", GlobalNavigation.nav1.HeadingZero.ToString());
+            }
+        }
     }
 }

@@ -200,6 +200,8 @@ namespace WpfApp1
 
             Global.SonarWindow.DoClose();
 
+            GlobalNavigation.CloseNavComm();
+
             Global.shutdowntype = Global.ShutDownType.Exit;
             //Environment.Exit(0);
         }

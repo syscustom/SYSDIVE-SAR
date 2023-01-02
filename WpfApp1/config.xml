@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Configuration>
-  <MissionFile value="">  
+  <MissionFile value="">
   </MissionFile >
 
   <SonarSwitch value="1">
@@ -8,11 +8,14 @@
 
   <SonarType value="2">
   </SonarType >
-  
+
+  <NavType value="3">
+  </NavType >
+
   <VisionSwitch value="0">
   </VisionSwitch >
 
-  <NavTelemetry value="COM22">
+  <NavTelemetry value="COM12">
   </NavTelemetry>
 
   <GPSPORT value="COM5">
@@ -21,13 +24,13 @@
   <GNSSMode value="0">
   </GNSSMode>
 
-  <EXTPORT value="COM18">
+  <EXTPORT value="COM3">
   </EXTPORT>
 
   <BATPORT value="COM1">
   </BATPORT>
 
-  <AUXPORT value="COM7">
+  <AUXPORT value="COM6">
   </AUXPORT>
 
   <RecordSamplingRate value ="2">
@@ -47,16 +50,16 @@
 
   <BrightLevel value="3">
   </BrightLevel>
-  
+
   <MapNorth value="0">
   </MapNorth>
-  
+
   <SonarDemoShow value="0">
   </SonarDemoShow>
-  
+
   <DefaultLat value="39.0565">
   </DefaultLat>
-  
+
   <DefaultLng value="117.0606">
   </DefaultLng>
 
@@ -65,7 +68,7 @@
 
   <MountDVL value="0">
   </MountDVL>
-  
+
   <DVLPORT value="COM6">
   </DVLPORT>
 

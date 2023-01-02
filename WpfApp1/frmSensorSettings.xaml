@@ -17,7 +17,6 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Background="Blue"/>
-            <Border Grid.Row="2" Background="Black"/>
             <Border Grid.Row="3" Background="Black"/>
             <Border Grid.Row="4" Background="Black"/>
             <Label x:Name="lbl_Home" Content="主 页" HorizontalAlignment="Center" Height="34" Margin="-15,39,-15,0" VerticalAlignment="Top" Width="72" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="0" MouseUp="Lbl_Home_MouseUp">
@@ -31,6 +30,16 @@
                 </Label.RenderTransform>
             </Label>
             <Label x:Name="lbl_Depth" Content="深 度" HorizontalAlignment="Center" Height="34" Margin="-12,43,-12,0" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="1" MouseUp="Lbl_Depth_MouseUp" >
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Heading" Content="航 向" HorizontalAlignment="Center" Height="34" Margin="-12,43,-12,0" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="2" MouseUp="Lbl_Heading_MouseUp" >
                 <Label.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -81,6 +90,10 @@
                 </TransformGroup>
             </Label.RenderTransform>
         </Label>
+        <Grid HorizontalAlignment="Left" Height="115" Margin="735,244,0,0" VerticalAlignment="Top" Width="240" Background="#FF4F4A4A">
+            <Label x:Name="lblHeadingOffsetMode" Content="标 定 航 向" HorizontalAlignment="Left" Height="43" Margin="6,5,0,0" VerticalAlignment="Top" Width="130"  FontSize="24" Foreground="White"/>
+            <Label x:Name="lblHeadingOffsetSwitch" Content="已标定/未标定" HorizontalAlignment="Left" Height="39" Margin="9,58,0,0" VerticalAlignment="Top" Width="Auto"  FontSize="24" Foreground="White"/>
+        </Grid>
 
     </Grid>
 </Window>

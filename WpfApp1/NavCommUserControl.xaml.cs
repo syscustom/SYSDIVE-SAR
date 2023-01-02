@@ -32,6 +32,8 @@ namespace WpfApp1
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
 
+        private Iocomp.Instrumentation.Professional.SlidingCompass slidingCompass1;
+
         DispatcherTimer tmrNavCommCheck = new DispatcherTimer();
         DispatcherTimer tmrBatteryCheck = new DispatcherTimer();
         DispatcherTimer tmrNavStartRecordLog = new DispatcherTimer();
@@ -56,12 +58,54 @@ namespace WpfApp1
             tmrNavStartRecordLog.Tick += new EventHandler(tmrNavStartRecordLog_Tick);
             tmrNavStartRecordLog.Interval = TimeSpan.FromSeconds(2); //2秒钟间隔
 
+            Iocomp.Classes.PointerSlidingScale pointerSlidingScale1 = new Iocomp.Classes.PointerSlidingScale();
+            Iocomp.Classes.PointerSlidingScale pointerSlidingScale2 = new Iocomp.Classes.PointerSlidingScale();
+            this.slidingCompass1 = new Iocomp.Instrumentation.Professional.SlidingCompass();
+            this.slidingCompass1.LoadingBegin();
+            this.slidingCompass1.BackColor = this.slidingCompass1.BackColor = System.Drawing.Color.Black;//System.Drawing.Color.Transparent;//System.Drawing.Color.FromArgb(0x2c, 0x2c, 0x2c);
+            this.slidingCompass1.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slidingCompass1.ForeColor = System.Drawing.Color.White;
+            this.slidingCompass1.Name = "slidingCompass1";
+            pointerSlidingScale1.LineColor = System.Drawing.Color.Yellow;
+            pointerSlidingScale1.Style = Iocomp.Types.PointerStyleSlidingScale.Line;
+
+            pointerSlidingScale2.LineColor = System.Drawing.Color.Yellow;
+            pointerSlidingScale2.Style = Iocomp.Types.PointerStyleSlidingScale.Pointer;
+
+            this.slidingCompass1.Pointers.Add(pointerSlidingScale1);
+            this.slidingCompass1.Pointers.Add(pointerSlidingScale2);
+
+            this.slidingCompass1.Rotation = Iocomp.Types.RotationQuad.X090;
+            this.slidingCompass1.ScaleBackground.Style = Iocomp.Types.SlidingScaleBackgroundStyle.Clear;
+            this.slidingCompass1.ScaleDisplay.Direction = Iocomp.Types.SideDirection.RightToLeft;
+            this.slidingCompass1.ScaleDisplay.GeneratorAuto.MidIncluded = true;
+            this.slidingCompass1.ScaleDisplay.GeneratorAuto.MinorCount = 10;
+            this.slidingCompass1.ScaleDisplay.GeneratorFixed.MinorCount = 5;
+            this.slidingCompass1.ScaleDisplay.LineInnerVisible = true;
+            this.slidingCompass1.ScaleDisplay.LineThickness = 2;
+            this.slidingCompass1.ScaleDisplay.TextFormatting.Precision = 0;
+            this.slidingCompass1.ScaleDisplay.TextRotation = Iocomp.Types.TextRotation.X270;
+            this.slidingCompass1.ScaleDisplay.TickMajor.Color = System.Drawing.Color.White;
+            this.slidingCompass1.ScaleDisplay.TickMajor.Length = 45;
+            this.slidingCompass1.ScaleDisplay.TickMid.Color = System.Drawing.Color.White;
+            this.slidingCompass1.ScaleDisplay.TickMid.Length = 30;
+            this.slidingCompass1.ScaleDisplay.TickMid.TextVisible = false;
+            this.slidingCompass1.ScaleDisplay.TickMinor.Color = System.Drawing.Color.White;
+            this.slidingCompass1.ScaleDisplay.TickMinor.Length = 15;
+            this.slidingCompass1.ScaleRange.Min = -30D;
+            this.slidingCompass1.ScaleRange.Span = 60D;
+            this.slidingCompass1.Size = new System.Drawing.Size(543, 53);
+            this.slidingCompass1.LoadingEnd();
+            wfhCompass.Child = slidingCompass1;
         }
 
-        void InitDiveLog()
+        public void Close()
         {
-
-
+            tmrNavCommCheck.Stop();
+            tmrBatteryCheck.Stop();
+            tmrNavStartRecordLog.Stop();
+            wfhCompass.Child = null;
+            slidingCompass1.Dispose();
         }
 
         void tmrNavStartRecordLog_Tick(object sender, EventArgs e)
@@ -108,11 +152,16 @@ namespace WpfApp1
 
         void tmrNavCommCheck_Tick(object sender, EventArgs e)
         {
-            lblHeadingInfo.Content = GlobalNavigation.nav1.GetHeading();
-            lblDepthInfo.Content = GlobalNavigation.nav1.GetDepth();
+            slidingCompass1.Pointers[0].Value = GlobalNavigation.nav1.GetHeading();
+            lblHeadingInfo.Content = GlobalNavigation.nav1.GetHeading().ToString("0.0");// + "°";
+            lblDepthInfo.Content = GlobalNavigation.nav1.GetDepth();// + "米";
             lblDistance.Content = GlobalNavigation.nav1.Distance.ToString("0.0") + "米";
             lblWayPointName.Content = GlobalNavigation.nav1.SelectedMarker.Name;
-            lblBearing.Content = GlobalNavigation.nav1.Bearing.ToString("0.0");
+            lblBearing.Content = GlobalNavigation.nav1.Bearing.ToString("0.0") + "°";
+
+            lblPitchInfo.Content = GlobalNavigation.nav1.GetPitch().ToString("0.0") + "°";
+            lblRollInfo.Content = GlobalNavigation.nav1.GetRoll().ToString("0.0") + "°";
+
 
             if (GlobalDVL.isInstalled)
             {
@@ -122,7 +171,7 @@ namespace WpfApp1
                     lblAltitude.Content = "NaN";
             }
 
-                    
+
 
             if (Global.mapnorth == Global.MapNorth.Diver)
             {
@@ -157,12 +206,12 @@ namespace WpfApp1
                 strRecordPath = Global.RecordLogFileName + ".reclog";
                 para[0] = Global.MissionFileNameWithoutExtension;
 
-                    //Global.CurrentFileInfoWithoutExtension + " " + DateTime.Now.ToFileTime() + ".csv";
-               // }
-               // else
+                //Global.CurrentFileInfoWithoutExtension + " " + DateTime.Now.ToFileTime() + ".csv";
+                // }
+                // else
                 //{
                 //    strRecordPath = DateTime.Now.ToFileTime() + ".csv";
-               //     para[0] = " ";
+                //     para[0] = " ";
                 //}
 
 
@@ -207,7 +256,7 @@ namespace WpfApp1
 
                 tmrNavStartRecordLog.Start();
             }
-            else if(Global.IsStartRecordLog == false && (Global.IsStartRecordLog != IsStartRecordLog))
+            else if (Global.IsStartRecordLog == false && (Global.IsStartRecordLog != IsStartRecordLog))
             {
                 lblStartRecordLog.Content = "未记录";
                 IsStartRecordLog = Global.IsStartRecordLog;

@@ -56,6 +56,14 @@
       <HintPath>..\VideoCapX\Interop.VIDEOCAPXLib.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Iocomp.Instrumentation.WF40.Common, Version=4.0.4.13215, Culture=neutral, PublicKeyToken=096a9279a87304f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Iocomp\Product\.Net\WF40\Instrumentation\4.04\Iocomp.Instrumentation.WF40.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Iocomp.Instrumentation.WF40.Pro, Version=4.0.4.13285, Culture=neutral, PublicKeyToken=096a9279a87304f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Iocomp\Product\.Net\WF40\Instrumentation\4.04\Iocomp.Instrumentation.WF40.Pro.dll</HintPath>
+    </Reference>
     <Reference Include="SDK">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\BlueView\ProViewer 4.2.0.8521\SDK.dll</HintPath>
     </Reference>

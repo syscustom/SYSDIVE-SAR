@@ -8,37 +8,49 @@
              d:DesignHeight="100" d:DesignWidth="940">
     <Grid Height="100" Width="940">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="122*"/>
-            <ColumnDefinition Width="98*"/>
-            <ColumnDefinition Width="103*"/>
-            <ColumnDefinition Width="302*"/>
-            <ColumnDefinition Width="103*"/>
-            <ColumnDefinition Width="86*"/>
-            <ColumnDefinition Width="126*"/>
+            <ColumnDefinition Width="85*"/>
+            <ColumnDefinition Width="76*"/>
+            <ColumnDefinition Width="73*"/>
+            <ColumnDefinition Width="383*"/>
+            <ColumnDefinition Width="47*"/>
+            <ColumnDefinition Width="72*"/>
+            <ColumnDefinition Width="120*"/>
+            <ColumnDefinition Width="84*"/>
         </Grid.ColumnDefinitions>
-        <Label Content="电量指示" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="33" Width="90" Foreground="White" FontSize="18" Grid.Column="0" Margin="16,-4,16,0"/>
-        <Image x:Name="Battery_Img" Stretch="Fill" HorizontalAlignment="Center"  VerticalAlignment="Bottom" Height="35" Width="68" Grid.Column="0" Margin="27,0,27,22" />
+        <Label Content="电量指示" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="33" Width="84" Foreground="White" FontSize="18" Grid.Column="0" Margin="0,0,1,0"/>
+        <Image x:Name="Battery_Img" Stretch="Fill" HorizontalAlignment="Center"  VerticalAlignment="Bottom" Height="35" Width="68" Grid.Column="0" Margin="11,0,6,22" />
 
-        <Label Content="航向角" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="33" Width="70" Foreground="White" FontSize="18" Grid.Column="1" Margin="16,-4,12,0"/>
-        <Label x:Name="lblHeadingInfo" Content="000°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="33" Width="65" Foreground="White" FontSize="18" Grid.Column="1" Margin="15,35,18,0" HorizontalContentAlignment="Center"/>
-
-        <Label Content="深度" Grid.Column="2" HorizontalAlignment="Left" Height="33" Margin="17,-4,0,0" VerticalAlignment="Top" Width="70" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lblDepthInfo" Content="00.0m" Grid.Column="2" HorizontalAlignment="Left" Height="33" Margin="16,35,0,0" VerticalAlignment="Top" Width="70" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
+        <Label Content="深度" Grid.Column="1" HorizontalAlignment="Center" Height="33" VerticalAlignment="Top" Width="74" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center" Margin="1,0"/>
+        <Label x:Name="lblDepthInfo" Content="000.0" Grid.Column="1" HorizontalAlignment="Left" Height="35" Margin="0,33,0,0" VerticalAlignment="Top" Width="75" Foreground="#FFFFFDFD" FontSize="24" HorizontalContentAlignment="Center"/>
+        <Label Content="米" Grid.Column="1" HorizontalAlignment="Center" Height="32" Margin="1,68,1,0" VerticalAlignment="Top" Width="74" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
 
 
-        <Label Content="选择的目标点" Grid.Column="3" HorizontalAlignment="Left" Height="35" Margin="59,-4,0,0" VerticalAlignment="Top" Width="182" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
-        <Label Content="距离" Grid.Column="4" HorizontalAlignment="Left" Height="32" Margin="1,-4,0,0" VerticalAlignment="Top" Width="104" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <Label Content="航向" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="33" Width="72" Foreground="White" FontSize="18" Grid.Column="2" HorizontalContentAlignment="Center" Margin="1,0,0,0"/>
+        <Label x:Name="lblHeadingInfo" Content="000.0" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="35" Width="72" Foreground="White" FontSize="24" Grid.Column="2" Margin="1,33,0,0" HorizontalContentAlignment="Center"/>
+        <Label Content="度" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="32" Width="72" Foreground="White" FontSize="18" Grid.Column="2" HorizontalContentAlignment="Center" Margin="1,68,0,0"/>
 
-        <Label Content="高度" Grid.Column="5" HorizontalAlignment="Left" Height="33" VerticalAlignment="Top" Width="65" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center" Margin="10,-4,0,0"/>
-        <Label Content="潜水日志" Grid.Column="6" HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="95" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center" Margin="15,-4,0,0"/>
-        <Label x:Name="lblDistance" Content="000.0m" Grid.Column="4" HorizontalAlignment="Left" Height="33" Margin="9,35,0,0" VerticalAlignment="Top" Width="90" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lblWayPointName" Content="Target1" Grid.Column="3" HorizontalAlignment="Left" Margin="4,61,0,4"  Width="95" Foreground="#FFFFFDFD" HorizontalContentAlignment="Left" FontSize="18"/>
-        <Label x:Name="lblBearing" Content="000.0" Grid.Column="3" HorizontalAlignment="Left" Height="33" Margin="126,56,0,0" VerticalAlignment="Top" Width="90" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
+        <Label Content="俯仰" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="28" Width="46" Foreground="White" FontSize="15" Grid.Column="4" Margin="1,0,0,0"/>
+        <Label x:Name="lblPitchInfo" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="26" Width="46" Foreground="White" FontSize="15" Margin="1,24,0,0" HorizontalContentAlignment="Center" Grid.Column="4"/>
+        <Label Content="翻滚" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="28" Width="46" Foreground="White" FontSize="15" Grid.Column="4" Margin="1,47,0,0"/>
+        <Label x:Name="lblRollInfo" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="28" Width="46" Foreground="White" FontSize="15" Grid.Column="4" Margin="1,72,0,0" HorizontalContentAlignment="Center"/>
 
-        <Slider x:Name="slider" HorizontalAlignment="Left" Height="25" Margin="7,34,0,0" VerticalAlignment="Top" Width="290" Grid.Column="3"/>
-        <Label x:Name="lblStartRecordLog" Content="未记录" Grid.Column="6" HorizontalAlignment="Left" Height="33" Margin="21,37,0,0" VerticalAlignment="Top" Width="90" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center"/>
+
+        <Label Content="高度" Grid.Column="5" HorizontalAlignment="Left" Height="33" VerticalAlignment="Top" Width="72" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblAltitude" Content="000.0" Grid.Column="5" HorizontalAlignment="Left" Height="35" Margin="0,33,0,0" VerticalAlignment="Top" Width="72" Foreground="#FFFFFDFD" FontSize="24" HorizontalContentAlignment="Center"/>
+        <Label Content="米" Grid.Column="5" HorizontalAlignment="Center" Height="32" Margin="0,68,0,0" VerticalAlignment="Top" Width="72" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
+
+        <Label Content="选择的目标点" Grid.Column="6" HorizontalAlignment="Left" Height="35" VerticalAlignment="Top" Width="120" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblWayPointName" Content="Target1" Grid.Column="6" HorizontalAlignment="Left" Margin="0,31,0,35"  Width="120" Foreground="#FFFFFDFD" HorizontalContentAlignment="Left" FontSize="18"/>
+        <Label Content="距离:" Grid.Column="6" HorizontalAlignment="Left" Height="30" Margin="0,70,0,0" VerticalAlignment="Top" Width="44" Foreground="#FFFFFDFD" FontSize="15" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblDistance" Content="000.0m" Grid.Column="6" HorizontalAlignment="Left" Height="30" Margin="37,70,0,0" VerticalAlignment="Top" Width="63" Foreground="#FFFFFDFD" FontSize="15" HorizontalContentAlignment="Center"/>
+        <Label Content="偏航角:" Grid.Column="6" HorizontalAlignment="Left" Height="30" Margin="93,70,0,0" VerticalAlignment="Top" Width="59" Foreground="#FFFFFDFD" FontSize="15" HorizontalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <Label x:Name="lblBearing" Content="000.0°" Grid.Column="7" HorizontalAlignment="Left" Height="30" Margin="30,70,0,0" VerticalAlignment="Top" Width="54" Foreground="#FFFFFDFD" FontSize="15" HorizontalContentAlignment="Center"/>
+
+        <Label Content="潜水日志" Grid.Column="7" HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="84" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblStartRecordLog" Content="未记录" Grid.Column="7" HorizontalAlignment="Left" Height="33" Margin="0,32,0,0" VerticalAlignment="Top" Width="84" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center"/>
+
+        <WindowsFormsHost x:Name="wfhCompass" HorizontalAlignment="Right" Width="374" Background="#2c2c2c" Grid.Column="3" Margin="0,0,4,0" />
         <Button x:Name="button" Content="Button" Grid.Column="5" HorizontalAlignment="Left" Height="25" Margin="27,35,0,0" VerticalAlignment="Top" Width="45" Click="Button_Click" RenderTransformOrigin="0.556,0.2" Visibility="Hidden"/>
         <Button x:Name="button1" Content="Button" Grid.Column="5" HorizontalAlignment="Left" Height="25" Margin="27,70,0,0" VerticalAlignment="Top" Width="45" Click="Button1_Click" Visibility="Hidden"/>
-        <Label x:Name="lblAltitude" Content="00.0m" Grid.Column="5" HorizontalAlignment="Left" Height="33" Margin="7,35,0,0" VerticalAlignment="Top" Width="75" Foreground="#FFFFFDFD" FontSize="18" HorizontalContentAlignment="Center"/>
     </Grid>
 </UserControl>

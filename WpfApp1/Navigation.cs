@@ -10,6 +10,7 @@ namespace WpfApp1
     public class Navigation
     {
         private char devid = '0';
+        private SerialSendData serialport1;
         private double mdblheading = 0.0, mdblpitch = 0.0, mdblroll = 0.0, mdbldepth = 0.0, mdbltargetheading = 0.0, mdbltargetdepth = 0.0, mdblgyro = 0;
         private int noresponsecounter = 0;
         private bool installed = false;
@@ -28,7 +29,6 @@ namespace WpfApp1
 
         private int txpacks = 0, rxpacks = 0;
 
-
         public enum Dircetion
         {
             Zheng = 0,
@@ -36,7 +36,16 @@ namespace WpfApp1
             Stop = 2
         };
 
+        public enum NavType
+        {
+            Self = 0,
+            Mti = 1,
+            AH500 = 2,
+            DCM250B = 3
+        }
+
         private Dircetion turndirection = Dircetion.Stop;
+        private NavType navtype = NavType.Self;
 
         private double mdblDepthZero = 0.0;
         private bool mblnDepthZeroSwitch = false;
@@ -166,10 +175,23 @@ namespace WpfApp1
             set { turndirection = value; }
         }
 
-        public Navigation(char _devid) // ref SerialSendData _sp
+        public NavType NavigationType
+        {
+            get { return navtype; }
+            set { navtype = value; }
+        }
+
+        public Navigation(char _devid)
         {
             this.devid = _devid;
-            //serialport1 = _sp;
+            mdbllatitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLat", "value"));
+            mdbllongitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLng", "value"));
+        }
+
+        public Navigation(char _devid, ref SerialSendData _sp) // 
+        {
+            this.devid = _devid;
+            serialport1 = _sp;
             mdbllatitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLat", "value"));
             mdbllongitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLng", "value"));
         }
@@ -442,29 +464,63 @@ namespace WpfApp1
 
         public void InquiryData(char _id)
         {
-            switch (_id)
+            if (serialport1 != null)
             {
-                case 'l':
-                    //serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "l", 1);
-                    break;
-                case 'a':
-                    //serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "a", 1);
-                    break;
-                case 'd':
-                    //serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "d", 1);
-                    break;
-                case 'p':
-                    //serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "p", 1);
-                    break;
-                case 'r':
-                    //serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "r", 1);
-                    break;
-                case 'g':
-                    //serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "z", 1);
-                    break;
+                if (NavigationType == NavType.Self)
+                {
+                    switch (_id)
+                    {
+                        case 'l':
+                            serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "l", 1);
+                            break;
+                        case 'a':
+                            serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "a", 1);
+                            break;
+                        case 'd':
+                            serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "d", 1);
+                            break;
+                        case 'p':
+                            serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "p", 1);
+                            break;
+                        case 'r':
+                            serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "r", 1);
+                            break;
+                        case 'g':
+                            serialport1.SendMessage(SerialSendData.DataType.Nav, devid, '?', "z", 1);
+                            break;
+                    }
+                }
+                if (NavigationType == NavType.AH500)
+                {
+                    byte[] cmds = new byte[5];
+                    switch (_id)
+                    {
+                        case 'l':
+                            cmds[0] = 0x77;
+                            cmds[1] = 0x04;
+                            cmds[2] = 0x00;
+                            cmds[3] = 0x04;
+                            cmds[4] = 0x08;
+                            serialport1.SendMessage(cmds);
+                            break;
+                    }
+                }
+                if (NavigationType == NavType.DCM250B)
+                {
+                    byte[] cmds = new byte[5];
+                    switch (_id)
+                    {
+                        case 'l':
+                            cmds[0] = 0x68;
+                            cmds[1] = 0x04;
+                            cmds[2] = 0x00;
+                            cmds[3] = 0x04;
+                            cmds[4] = 0x08;
+                            serialport1.SendMessage(cmds);
+                            break;
+                    }
+                }
             }
-
-
         }
 
 

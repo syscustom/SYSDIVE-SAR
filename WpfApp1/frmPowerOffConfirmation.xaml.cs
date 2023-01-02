@@ -211,6 +211,8 @@ namespace WpfApp1
             //Global.EndCallService();
             Global.SonarWindow.DoClose();
 
+            GlobalNavigation.CloseNavComm();
+
             Global.shutdowntype = Global.ShutDownType.Shutdown;
             //ShutDownSys.DoExitWin(ShutDownSys.EWX_FORCE | ShutDownSys.EWX_POWEROFF); //关机
         }

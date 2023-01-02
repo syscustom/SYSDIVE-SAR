@@ -117,6 +117,27 @@ namespace ROV.Serial
             None = 11
         }
 
+        private enum AH500DataReceiveStatus
+        {
+            Head = 0,
+            DataLen = 1,
+            Address = 2,
+            Data = 3,
+            DataCRC = 4,
+            None = 5
+        }
+
+        private enum DCM250BDataReceiveStatus
+        {
+            Head = 0,
+            DataLen = 1,
+            Address = 2,
+            Command = 3,
+            Data = 4,
+            DataCRC = 5,
+            None = 6
+        }
+
         public enum DataType
         {
             Motor = 0,
@@ -127,7 +148,8 @@ namespace ROV.Serial
             SingleManip = 5,
             Altimeter = 6,
             LinearActuator = 7,
-            ExternalBoard = 8
+            ExternalBoard = 8,
+            AH500 = 9
         }
 
         public enum SerialType
@@ -138,7 +160,9 @@ namespace ROV.Serial
             AUXPORT = 3,
             BATPORT = 4,
             DVLPORT = 5,
-            None = 6
+            None = 6,
+            AH500Telemetry = 7,
+            DCM250BTelemetry = 8
         }
 
         private int WaitingACKTimeOut = 10; //等待ACK超时时间
@@ -181,6 +205,8 @@ namespace ROV.Serial
         public event UserRequest OnSuccessfulDataReceived;
         public event ByteUserRequest OnByteSuccessfulDataReceived;
         public event UserRequest OnNavDataReceived;
+        public event ByteUserRequest OnAH500NavDataReceived;
+        public event ByteUserRequest OnDCM250BNavDataReceived;
         public event UserRequest OnAltimeterDataReceived;
         public event UserLogRequest OnDataLogReceived;
         public event UserRequest OnJunctionBoardDataReceived;
@@ -190,10 +216,18 @@ namespace ROV.Serial
         public event UserRequest OnCMDConfirmationReceived;
 
         DataReceiveStatus drs;
+        AH500DataReceiveStatus ah500drs;
+        DCM250BDataReceiveStatus dcm250bdrs;
+
         ArrayList messagedata = new ArrayList();
         byte messagecmd1 = 0;
         byte messagecmd2 = 0;
         byte[] messageend = new byte[2];
+
+        byte messagelength = 0;
+        byte messageaddress = 0;
+        byte messagecommand = 0;
+        byte messagelengthcounter = 0;
 
         public int WaitingThrusterACKTimeOut
         {
@@ -297,6 +331,26 @@ namespace ROV.Serial
                             serialPort1.Write(cmds, 0, cmds.Length);
                         }
                         break;
+                    case SerialType.AH500Telemetry:
+                        if (malCmdQueue.Count > 200) malCmdQueue.Clear();
+                        if (malCmdQueue.Count > 0)
+                        {
+                            byte[] cmds;
+                            cmds = (byte[])malCmdQueue[0];
+                            malCmdQueue.RemoveAt(0);
+                            serialPort1.Write(cmds, 0, cmds.Length);
+                        }
+                        break;
+                    case SerialType.DCM250BTelemetry:
+                        if (malCmdQueue.Count > 200) malCmdQueue.Clear();
+                        if (malCmdQueue.Count > 0)
+                        {
+                            byte[] cmds;
+                            cmds = (byte[])malCmdQueue[0];
+                            malCmdQueue.RemoveAt(0);
+                            serialPort1.Write(cmds, 0, cmds.Length);
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -317,6 +371,158 @@ namespace ROV.Serial
                 Thread.Sleep(1);
                 switch (serialtype)
                 {
+                    case SerialType.DCM250BTelemetry:
+                        if (serialPort1.BytesToRead > 0)
+                        {
+                            byte[] receivedbyte = new byte[serialPort1.BytesToRead];
+                            serialPort1.Read(receivedbyte, 0, receivedbyte.Length);
+                            for (int i = 0; i < receivedbyte.Length; i++)
+                            {
+                                switch (dcm250bdrs)
+                                {
+                                    case DCM250BDataReceiveStatus.Head:
+                                        if (receivedbyte[i] == 0x68)
+                                        {
+                                            dcm250bdrs = DCM250BDataReceiveStatus.DataLen;
+                                            messagelengthcounter = 0;
+                                        }
+                                        break;
+                                    case DCM250BDataReceiveStatus.DataLen:
+                                        messagelength = receivedbyte[i];
+                                        messagelengthcounter++;
+                                        dcm250bdrs = DCM250BDataReceiveStatus.Address;
+                                        break;
+                                    case DCM250BDataReceiveStatus.Address:
+                                        messageaddress = receivedbyte[i];
+                                        messagelengthcounter++;
+                                        dcm250bdrs = DCM250BDataReceiveStatus.Data;
+                                        break;
+                                    case DCM250BDataReceiveStatus.Data:
+                                        if (messagelengthcounter < (messagelength - 1))
+                                        {
+                                            messagedata.Add(receivedbyte[i]);
+                                            messagelengthcounter++;
+                                        }
+                                        if (messagelengthcounter >= (messagelength - 1))
+                                        {
+                                            messagelengthcounter = 0;
+                                            dcm250bdrs = DCM250BDataReceiveStatus.DataCRC;
+                                        }
+                                        break;
+                                    case DCM250BDataReceiveStatus.DataCRC:
+                                        byte dcm250bbytescrc = receivedbyte[i];
+                                        ArrayList crcmessagedata = new ArrayList();
+                                        crcmessagedata.Add(messagelength);
+                                        crcmessagedata.Add(messageaddress);
+                                        for (int j = 0; j < messagedata.Count; j++)
+                                        {
+                                            crcmessagedata.Add(messagedata[j]);
+                                        }
+
+                                        byte[] crcmessagedatabyte = (byte[])crcmessagedata.ToArray(typeof(byte));
+
+                                        byte dcm250bbytescrcresult = 0;
+
+                                        unchecked // Let overflow occur without exceptions
+                                        {
+                                            foreach (byte b in crcmessagedatabyte)
+                                            {
+                                                dcm250bbytescrcresult += b;
+                                            }
+                                        }
+
+                                        //byte ah500bytescrcresult = ah500crc.Checksum(crcmessagedatabyte);                         
+
+                                        if (dcm250bbytescrcresult == dcm250bbytescrc) //CRC校验成功
+                                        {
+                                            OnDCM250BNavDataReceived(this, new ByteReceivedEventArgs((byte[])messagedata.ToArray(typeof(byte))));
+                                        }
+                                        messagedata.Clear();
+                                        dcm250bdrs = DCM250BDataReceiveStatus.Head;
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                            }
+                        }
+                        break;
+                    case SerialType.AH500Telemetry:
+                        if (serialPort1.BytesToRead > 0)
+                        {
+                            byte[] receivedbyte = new byte[serialPort1.BytesToRead];
+                            serialPort1.Read(receivedbyte, 0, receivedbyte.Length);
+                            for (int i = 0; i < receivedbyte.Length; i++)
+                            {
+                                switch (ah500drs)
+                                {
+                                    case AH500DataReceiveStatus.Head:
+                                        if (receivedbyte[i] == 0x77)
+                                        {
+                                            ah500drs = AH500DataReceiveStatus.DataLen;
+                                            messagelengthcounter = 0;
+                                        }
+                                        break;
+                                    case AH500DataReceiveStatus.DataLen:
+                                        messagelength = receivedbyte[i];
+                                        messagelengthcounter++;
+                                        ah500drs = AH500DataReceiveStatus.Address;
+                                        break;
+                                    case AH500DataReceiveStatus.Address:
+                                        messageaddress = receivedbyte[i];
+                                        messagelengthcounter++;
+                                        ah500drs = AH500DataReceiveStatus.Data;
+                                        break;
+                                    case AH500DataReceiveStatus.Data:
+                                        if (messagelengthcounter < (messagelength - 1))
+                                        {
+                                            messagedata.Add(receivedbyte[i]);
+                                            messagelengthcounter++;
+                                        }
+                                        if (messagelengthcounter >= (messagelength - 1))
+                                        {
+                                            messagelengthcounter = 0;
+                                            ah500drs = AH500DataReceiveStatus.DataCRC;
+                                        }
+                                        break;
+                                    case AH500DataReceiveStatus.DataCRC:
+                                        byte ah500bytescrc = receivedbyte[i];
+                                        CRC8Calc ah500crc = new CRC8Calc(CRC8_POLY.CRC8_CCITT);
+                                        ArrayList crcmessagedata = new ArrayList();
+                                        crcmessagedata.Add(messagelength);
+                                        crcmessagedata.Add(messageaddress);
+                                        for (int j = 0; j < messagedata.Count; j++)
+                                        {
+                                            crcmessagedata.Add(messagedata[j]);
+                                        }
+
+                                        byte[] crcmessagedatabyte = (byte[])crcmessagedata.ToArray(typeof(byte));
+
+                                        byte ah500bytescrcresult = 0;
+
+                                        unchecked // Let overflow occur without exceptions
+                                        {
+                                            foreach (byte b in crcmessagedatabyte)
+                                            {
+                                                ah500bytescrcresult += b;
+                                            }
+                                        }
+
+                                        //byte ah500bytescrcresult = ah500crc.Checksum(crcmessagedatabyte);                         
+
+                                        if (ah500bytescrcresult == ah500bytescrc) //CRC校验成功
+                                        {
+                                            OnAH500NavDataReceived(this, new ByteReceivedEventArgs((byte[])messagedata.ToArray(typeof(byte))));
+                                        }
+                                        messagedata.Clear();
+                                        ah500drs = AH500DataReceiveStatus.Head;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                        break;
                     case SerialType.NavTelemetry:
                         if (mblnWaitingACK == SerialLineWaiting.Sensor)
                         {
@@ -446,7 +652,7 @@ namespace ROV.Serial
                                                     switch (m_current[3])
                                                     {
                                                         case 'l':
-                                                           if (cmds[2] >= 'A' && cmds[2] <= 'Z')
+                                                            if (cmds[2] >= 'A' && cmds[2] <= 'Z')
                                                             {
                                                                 len = Convert.ToInt32(cmds[2]);
                                                                 len = len - 55;
@@ -940,7 +1146,7 @@ namespace ROV.Serial
                             byte[] gpsbytes = System.Text.Encoding.UTF8.GetBytes(gpssubstr[0]);
 
                             byte checksum = 0;
-                            for(int i=0;i< gpsbytes.Length;i++)
+                            for (int i = 0; i < gpsbytes.Length; i++)
                             {
                                 checksum ^= gpsbytes[i];
                             }
@@ -994,7 +1200,7 @@ namespace ROV.Serial
                     serialPort1.ReadTimeout = 100;
                     serialPort1.NewLine = "\r\n";
                 }
-                if(_serialtype == SerialType.EXTPORT)
+                if (_serialtype == SerialType.EXTPORT)
                 {
                     serialPort1.DtrEnable = true;
 
@@ -1044,6 +1250,12 @@ namespace ROV.Serial
                     malCmdQueue.Add(cmds);
                     break;
                 case SerialType.BATPORT:
+                    malCmdQueue.Add(cmds);
+                    break;
+                case SerialType.AH500Telemetry:
+                    malCmdQueue.Add(cmds);
+                    break;
+                case SerialType.DCM250BTelemetry:
                     malCmdQueue.Add(cmds);
                     break;
             }
@@ -1169,6 +1381,9 @@ namespace ROV.Serial
                     cmds = (char[])charlist.ToArray(typeof(char));
                     //malCmdQueue.Add(cmds);
                     malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
+                    break;
+                case DataType.AH500:
+
                     break;
                 case DataType.ExternalBoard:
                     charlist.Add('c');

@@ -227,7 +227,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[3] == 0 && GlobalUpBoard.ButtonState[3] == false) //Pressed Location Button
                 {
-                    
+
                     GlobalUpBoard.ButtonState[3] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[3] == 1 && GlobalUpBoard.ButtonState[3] == true)
@@ -269,7 +269,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[8] == 0 && GlobalUpBoard.ButtonState[8] == false) //Pressed Clear Button
                 {
-                    
+
                     GlobalUpBoard.ButtonState[8] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[8] == 1 && GlobalUpBoard.ButtonState[8] == true)

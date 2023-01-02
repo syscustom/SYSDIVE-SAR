@@ -278,7 +278,7 @@ namespace WpfApp1
                 double lng1 = 0.0;
                 if (GlobalDVL.dvl1.satellitefix == false)
                 {
-                    if(GlobalNavigation.nav1.GPSValid)
+                    if (GlobalNavigation.nav1.GPSValid)
                     {
                         lat1 = GlobalNavigation.nav1.Latitude;
                         lng1 = GlobalNavigation.nav1.Longitude;
@@ -290,7 +290,7 @@ namespace WpfApp1
                 }
                 else
                 {
-                    if(GlobalNavigation.nav1.GPSValid)
+                    if (GlobalNavigation.nav1.GPSValid)
                     {
                         lat1 = GlobalNavigation.nav1.Latitude;
                         lng1 = GlobalNavigation.nav1.Longitude;
@@ -1292,7 +1292,7 @@ namespace WpfApp1
             EventHandlerList list = (EventHandlerList)pi.GetValue(mainModel.Sonar, null);
             list.RemoveHandler(obj, list[obj]);
             */
-        mainModel.DisconnectSonar();
+            mainModel.DisconnectSonar();
             mainModel.Close();
         }
     }
@@ -1367,7 +1367,7 @@ namespace WpfApp1
                     dvl1.altitude = Convert.ToDouble(DVLData[6]);
                     if (DVLData[7] == "y")
                         dvl1.valid = true;
-                    if(DVLData[7] == "n")
+                    if (DVLData[7] == "n")
                         dvl1.valid = false;
                     dvl1.status = Convert.ToInt32(DVLData[8]);
                 }
@@ -1392,20 +1392,56 @@ namespace WpfApp1
 
         public static void CreateNav()
         {
-            serialport1 = new SerialSendData();
-            //serialport1.OnDataReceived += new SerialSendData.UserRequest(DataReceived);
-            //serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
-            //serialport1.OnNavDataReceived += new SerialSendData.UserRequest(NavDataReceived);
-            //serialport1.OpenPort("COM12", 57600, SerialSendData.SerialType.NavTelemetry); //主通信
+            if (SelectXMLData.GetConfiguration("NavType", "value") == "0")
+            {
+                serialport1 = new SerialSendData();
+                //serialport1.OnDataReceived += new SerialSendData.UserRequest(DataReceived);
+                //serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
+                //serialport1.OnNavDataReceived += new SerialSendData.UserRequest(NavDataReceived);
+                //serialport1.OpenPort("COM12", 57600, SerialSendData.SerialType.NavTelemetry); //主通信
+                nav1 = new Navigation('1', ref serialport1);
+                nav1.NavigationType = Navigation.NavType.Self;
 
-            mti = new MTi();
-            mti.OpenPort(SelectXMLData.GetConfiguration("NavTelemetry", "value"));
+            }
 
-            nav1 = new Navigation('1'); //ref serialport1
-            nav1.SetInstall(true);
+            if (SelectXMLData.GetConfiguration("NavType", "value") == "1")
+            {
+                nav1 = new Navigation('1');
+                mti = new MTi();
+                mti.OpenPort(SelectXMLData.GetConfiguration("NavTelemetry", "value"));
+                nav1.NavigationType = Navigation.NavType.Mti;
+            }
 
-            nav1.SetHeading(0);
-            nav1.SetTrueHeading(0);
+            if (SelectXMLData.GetConfiguration("NavType", "value") == "2")
+            {
+                serialport1 = new SerialSendData();
+                serialport1.OnDataReceived += new SerialSendData.UserRequest(DataReceived);
+                serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
+                serialport1.OnAH500NavDataReceived += new SerialSendData.ByteUserRequest(AH500NavDataReceived);
+                serialport1.OpenPort(SelectXMLData.GetConfiguration("NavTelemetry", "value"), 9600, SerialSendData.SerialType.AH500Telemetry); //主通信
+                nav1 = new Navigation('1', ref serialport1);
+                nav1.NavigationType = Navigation.NavType.AH500;
+            }
+
+            if (SelectXMLData.GetConfiguration("NavType", "value") == "3")
+            {
+                serialport1 = new SerialSendData();
+                serialport1.OnDataReceived += new SerialSendData.UserRequest(DataReceived);
+                serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
+                serialport1.OnDCM250BNavDataReceived += new SerialSendData.ByteUserRequest(DCM250BNavDataReceived);
+                serialport1.OpenPort(SelectXMLData.GetConfiguration("NavTelemetry", "value"), 9600, SerialSendData.SerialType.DCM250BTelemetry); //主通信
+                nav1 = new Navigation('1', ref serialport1);
+                nav1.NavigationType = Navigation.NavType.DCM250B;
+            }
+
+            if (nav1 != null)
+            {
+                nav1.SetInstall(true);
+
+                nav1.SetHeading(0);
+                nav1.SetTrueHeading(0);
+            }
+
 
             threadNavCollecting = new Thread(new ThreadStart(StartNavInquiry));
             threadNavCollecting.Start();
@@ -1419,7 +1455,8 @@ namespace WpfApp1
         public static void CloseNav()
         {
             serialport1.ClosePort();
-            mti.ClosePort();
+            if (mti != null)
+                mti.ClosePort();
             if (threadNavCollecting != null) threadNavCollecting.Abort();
 
         }
@@ -1427,6 +1464,146 @@ namespace WpfApp1
         private static void DataReceived(object sender, ROV.Serial.ReceivedEventArgs e)
         {
 
+        }
+
+        private static void DCM250BNavDataReceived(object sender, ROV.Serial.ByteReceivedEventArgs e)
+        {
+            byte[] bytes = e.DataReceived;
+            byte[] pitchbytes = new byte[3];
+            byte[] rollbytes = new byte[3];
+            byte[] yawbytes = new byte[3];
+
+            pitchbytes[0] = bytes[1];
+            pitchbytes[1] = bytes[2];
+            pitchbytes[2] = bytes[3];
+
+            rollbytes[0] = bytes[4];
+            rollbytes[1] = bytes[5];
+            rollbytes[2] = bytes[6];
+
+            yawbytes[0] = bytes[7];
+            yawbytes[1] = bytes[8];
+            yawbytes[2] = bytes[9];
+
+
+            if (nav1.NavigationType == Navigation.NavType.DCM250B)
+            {
+                int pitchsize1 = 10 * (pitchbytes[0] / 16) + (pitchbytes[0] % 16);
+                int pitchshiwei = pitchsize1 / 10 % 10;
+                int pitchgewei = pitchsize1 / 1 % 10;
+
+                int pitchsize2 = 10 * (pitchbytes[1] / 16) + (pitchbytes[1] % 16);
+                int pitchsize3 = 10 * (pitchbytes[2] / 16) + (pitchbytes[2] % 16);
+                double pitch = Convert.ToDouble(pitchgewei * 100) + Convert.ToDouble(pitchsize2) + Convert.ToDouble(pitchsize3 * 0.01);
+                if (pitchshiwei == 1)
+                    pitch *= -1;
+
+                int rollsize1 = 10 * (rollbytes[0] / 16) + (rollbytes[0] % 16);
+                int rollshiwei = rollsize1 / 10 % 10;
+                int rollgewei = rollsize1 / 1 % 10;
+
+                int rollsize2 = 10 * (rollbytes[1] / 16) + (rollbytes[1] % 16);
+                int rollsize3 = 10 * (rollbytes[2] / 16) + (rollbytes[2] % 16);
+                double roll = Convert.ToDouble(rollgewei * 100) + Convert.ToDouble(rollsize2) + Convert.ToDouble(rollsize3 * 0.01);
+                if (rollshiwei == 1)
+                    roll *= -1;
+
+                int yawsize1 = 10 * (yawbytes[0] / 16) + (yawbytes[0] % 16);
+                int yawshiwei = yawsize1 / 10 % 10;
+                int yawgewei = yawsize1 / 1 % 10;
+
+                int yawsize2 = 10 * (yawbytes[1] / 16) + (yawbytes[1] % 16);
+                int yawsize3 = 10 * (yawbytes[2] / 16) + (yawbytes[2] % 16);
+                double yaw = Convert.ToDouble(yawgewei * 100) + Convert.ToDouble(yawsize2) + Convert.ToDouble(yawsize3 * 0.01);
+                if (yawshiwei == 1)
+                    yaw *= -1;
+                double heading = 0.0;
+                heading = yaw;
+                if (nav1.HeadingZeroSwitch == true)
+                {
+                    heading -= nav1.HeadingZero;
+                    if (heading > 360)
+                        heading = heading - 360;
+                    if (heading < 0)
+                        heading = heading + 360;
+                }
+                nav1.SetTrueHeading(heading);
+                nav1.SetHeading(heading);
+
+                nav1.SetPitch(pitch);
+                nav1.SetRoll(roll);
+
+            }
+        }
+
+        private static void AH500NavDataReceived(object sender, ROV.Serial.ByteReceivedEventArgs e)
+        {
+            byte[] bytes = e.DataReceived;
+            byte[] pitchbytes = new byte[3];
+            byte[] rollbytes = new byte[3];
+            byte[] yawbytes = new byte[3];
+
+            pitchbytes[0] = bytes[1];
+            pitchbytes[1] = bytes[2];
+            pitchbytes[2] = bytes[3];
+
+            rollbytes[0] = bytes[4];
+            rollbytes[1] = bytes[5];
+            rollbytes[2] = bytes[6];
+
+            yawbytes[0] = bytes[7];
+            yawbytes[1] = bytes[8];
+            yawbytes[2] = bytes[9];
+
+
+            if (nav1.NavigationType == Navigation.NavType.AH500)
+            {
+                int pitchsize1 = 10 * (pitchbytes[0] / 16) + (pitchbytes[0] % 16);
+                int pitchshiwei = pitchsize1 / 10 % 10;
+                int pitchgewei = pitchsize1 / 1 % 10;
+
+                int pitchsize2 = 10 * (pitchbytes[1] / 16) + (pitchbytes[1] % 16);
+                int pitchsize3 = 10 * (pitchbytes[2] / 16) + (pitchbytes[2] % 16);
+                double pitch = Convert.ToDouble(pitchgewei * 100) + Convert.ToDouble(pitchsize2) + Convert.ToDouble(pitchsize3 * 0.01);
+                if (pitchshiwei == 1)
+                    pitch *= -1;
+
+                int rollsize1 = 10 * (rollbytes[0] / 16) + (rollbytes[0] % 16);
+                int rollshiwei = rollsize1 / 10 % 10;
+                int rollgewei = rollsize1 / 1 % 10;
+
+                int rollsize2 = 10 * (rollbytes[1] / 16) + (rollbytes[1] % 16);
+                int rollsize3 = 10 * (rollbytes[2] / 16) + (rollbytes[2] % 16);
+                double roll = Convert.ToDouble(rollgewei * 100) + Convert.ToDouble(rollsize2) + Convert.ToDouble(rollsize3 * 0.01);
+                if (rollshiwei == 1)
+                    roll *= -1;
+
+                int yawsize1 = 10 * (yawbytes[0] / 16) + (yawbytes[0] % 16);
+                int yawshiwei = yawsize1 / 10 % 10;
+                int yawgewei = yawsize1 / 1 % 10;
+
+                int yawsize2 = 10 * (yawbytes[1] / 16) + (yawbytes[1] % 16);
+                int yawsize3 = 10 * (yawbytes[2] / 16) + (yawbytes[2] % 16);
+                double yaw = Convert.ToDouble(yawgewei * 100) + Convert.ToDouble(yawsize2) + Convert.ToDouble(yawsize3 * 0.01);
+                if (yawshiwei == 1)
+                    yaw *= -1;
+                double heading = 0.0;
+                heading = yaw;
+                if (nav1.HeadingZeroSwitch == true)
+                {
+                    heading -= nav1.HeadingZero;
+                    if (heading > 360)
+                        heading = heading - 360;
+                    if (heading < 0)
+                        heading = heading + 360;
+                }
+                nav1.SetTrueHeading(heading);
+                nav1.SetHeading(heading);
+
+                nav1.SetPitch(pitch);
+                nav1.SetRoll(roll);
+
+            }
         }
 
         private static void NavDataReceived(object sender, ROV.Serial.ReceivedEventArgs e)
@@ -1439,146 +1616,150 @@ namespace WpfApp1
             double pitch = 0.0;
             double roll = 0.0;
             double temperature = 0.0;
-            switch (chars[0])
+
+            if (nav1.NavigationType == Navigation.NavType.Self)
             {
-                case 'l':
-                    str = new string(chars, 1, chars.Length - 1);
-                    string[] sArray = str.Split(',');
+                switch (chars[0])
+                {
+                    case 'l':
+                        str = new string(chars, 1, chars.Length - 1);
+                        string[] sArray = str.Split(',');
 
 
-                    /*
-                    heading = Convert.ToDouble(sArray[0]);
-                    if (heading == 0) return;
-                    if (nav1.HeadingZeroSwitch == true)
-                    {
-                        heading += nav1.HeadingZero;
-                        if (heading > 360)
-                            heading = heading - 360;
-                        if (heading < 0)
-                            heading = heading + 360;
-                    }
-                    nav1.SetTrueHeading(heading);
-                    nav1.SetHeading(heading);
-                    */
+                        /*
+                        heading = Convert.ToDouble(sArray[0]);
+                        if (heading == 0) return;
+                        if (nav1.HeadingZeroSwitch == true)
+                        {
+                            heading += nav1.HeadingZero;
+                            if (heading > 360)
+                                heading = heading - 360;
+                            if (heading < 0)
+                                heading = heading + 360;
+                        }
+                        nav1.SetTrueHeading(heading);
+                        nav1.SetHeading(heading);
+                        */
 
-                    depth = Convert.ToDouble(sArray[0]);
-                    depth = (depth - 101300) / (nav1.FluidDensity * 9.80665);
-                    if (nav1.DepthZeroSwitch == true)
-                        depth = depth - nav1.DepthZero;
-                    depth = Math.Round(depth, 2);
-                    //if (Math.Abs(depth - nav1.GetDepth()) > 10) return;
-                    nav1.SetDepth(depth);
+                        depth = Convert.ToDouble(sArray[0]);
+                        depth = (depth - 101300) / (nav1.FluidDensity * 9.80665);
+                        if (nav1.DepthZeroSwitch == true)
+                            depth = depth - nav1.DepthZero;
+                        depth = Math.Round(depth, 2);
+                        //if (Math.Abs(depth - nav1.GetDepth()) > 10) return;
+                        nav1.SetDepth(depth);
 
-                    /*
-                    zgyro = Convert.ToDouble(sArray[2]);
-                    nav1.SetGyro(zgyro);
+                        /*
+                        zgyro = Convert.ToDouble(sArray[2]);
+                        nav1.SetGyro(zgyro);
 
-                    pitch = Convert.ToDouble(sArray[3]);
-                    nav1.SetPitch(pitch);
+                        pitch = Convert.ToDouble(sArray[3]);
+                        nav1.SetPitch(pitch);
 
-                    roll = Convert.ToDouble(sArray[4]);
-                    nav1.SetRoll(roll);
-                    */
-                    temperature = Convert.ToDouble(sArray[1]);
+                        roll = Convert.ToDouble(sArray[4]);
+                        nav1.SetRoll(roll);
+                        */
+                        temperature = Convert.ToDouble(sArray[1]);
 
-                    break;
-                case 'a':
-                    str = new string(chars, 1, chars.Length - 1);
-                    heading = Convert.ToDouble(str);
-                    if (heading == 0) return;
-                    nav1.SetTrueHeading(heading);
-                    nav1.SetHeading(heading);
-                    str = string.Format("{0:000.0}", heading);
-                    break;
-                case 'p':
-                    byte[] temppitchangel = new byte[3];
-                    byte[] pitchangel = new byte[3];
-                    str = new string(chars, 1, chars.Length - 1);
-                    pitch = Convert.ToDouble(str);
-                    nav1.SetPitch(pitch);
-                    str = string.Format("{0:00}", pitch);
-                    temppitchangel = System.Text.Encoding.Default.GetBytes(str);
-                    if (temppitchangel[0] == 45)
-                    {
-                        pitchangel[0] = 0x01;
-                        pitchangel[1] = temppitchangel[1];
-                        pitchangel[2] = temppitchangel[2];
-                    }
-                    if (temppitchangel[0] >= 48 && temppitchangel[0] <= 57)
-                    {
-                        pitchangel[0] = 0x02;
-                        pitchangel[1] = temppitchangel[0];
-                        pitchangel[2] = temppitchangel[1];
-                    }
+                        break;
+                    case 'a':
+                        str = new string(chars, 1, chars.Length - 1);
+                        heading = Convert.ToDouble(str);
+                        if (heading == 0) return;
+                        nav1.SetTrueHeading(heading);
+                        nav1.SetHeading(heading);
+                        str = string.Format("{0:000.0}", heading);
+                        break;
+                    case 'p':
+                        byte[] temppitchangel = new byte[3];
+                        byte[] pitchangel = new byte[3];
+                        str = new string(chars, 1, chars.Length - 1);
+                        pitch = Convert.ToDouble(str);
+                        nav1.SetPitch(pitch);
+                        str = string.Format("{0:00}", pitch);
+                        temppitchangel = System.Text.Encoding.Default.GetBytes(str);
+                        if (temppitchangel[0] == 45)
+                        {
+                            pitchangel[0] = 0x01;
+                            pitchangel[1] = temppitchangel[1];
+                            pitchangel[2] = temppitchangel[2];
+                        }
+                        if (temppitchangel[0] >= 48 && temppitchangel[0] <= 57)
+                        {
+                            pitchangel[0] = 0x02;
+                            pitchangel[1] = temppitchangel[0];
+                            pitchangel[2] = temppitchangel[1];
+                        }
 
-                    if (temppitchangel[0] == 48 && temppitchangel[1] == 48)
-                    {
-                        pitchangel[0] = 0x00;
-                        pitchangel[1] = temppitchangel[0];
-                        pitchangel[2] = temppitchangel[1];
-                    }
-                    break;
-                case 'r':
-                    byte[] temprollangel = new byte[3];
-                    byte[] rollangel = new byte[3];
-                    str = new string(chars, 1, chars.Length - 1);
-                    roll = Convert.ToDouble(str);
-                    nav1.SetRoll(roll);
-                    str = string.Format("{0:00}", roll);
-                    temprollangel = System.Text.Encoding.Default.GetBytes(str);
-                    if (temprollangel[0] == 45)
-                    {
-                        rollangel[0] = 0x01;
-                        rollangel[1] = temprollangel[1];
-                        rollangel[2] = temprollangel[2];
-                    }
-                    if (temprollangel[0] >= 48 && temprollangel[0] <= 57)
-                    {
-                        rollangel[0] = 0x02;
-                        rollangel[1] = temprollangel[0];
-                        rollangel[2] = temprollangel[1];
-                    }
+                        if (temppitchangel[0] == 48 && temppitchangel[1] == 48)
+                        {
+                            pitchangel[0] = 0x00;
+                            pitchangel[1] = temppitchangel[0];
+                            pitchangel[2] = temppitchangel[1];
+                        }
+                        break;
+                    case 'r':
+                        byte[] temprollangel = new byte[3];
+                        byte[] rollangel = new byte[3];
+                        str = new string(chars, 1, chars.Length - 1);
+                        roll = Convert.ToDouble(str);
+                        nav1.SetRoll(roll);
+                        str = string.Format("{0:00}", roll);
+                        temprollangel = System.Text.Encoding.Default.GetBytes(str);
+                        if (temprollangel[0] == 45)
+                        {
+                            rollangel[0] = 0x01;
+                            rollangel[1] = temprollangel[1];
+                            rollangel[2] = temprollangel[2];
+                        }
+                        if (temprollangel[0] >= 48 && temprollangel[0] <= 57)
+                        {
+                            rollangel[0] = 0x02;
+                            rollangel[1] = temprollangel[0];
+                            rollangel[2] = temprollangel[1];
+                        }
 
-                    if (temprollangel[0] == 48 && temprollangel[1] == 48)
-                    {
-                        rollangel[0] = 0x00;
-                        rollangel[1] = temprollangel[0];
-                        rollangel[2] = temprollangel[1];
-                    }
-                    //lblRollInfo.Text = str;
-                    break;
-                case 'd':
-                    str = new string(chars, 1, chars.Length - 1);
-                    depth = Convert.ToDouble(str);
-                    str = string.Format("{0:000.0}", depth);
-                    if (Math.Abs(depth - nav1.GetDepth()) > 10) return;
-                    nav1.SetDepth(depth);
-                    break;
-                case 'z':
-                    str = new string(chars, 1, chars.Length - 1);
-                    zgyro = Convert.ToDouble(str);
-                    str = string.Format("{0:000}", zgyro);
-                    nav1.SetGyro(zgyro);
-    
-                    break;
-                case 'o':
-                    /*
-                    if (chars[1] == '0')
-                    {
-                        lblCompassOutputInquiryInfo.Text = "关闭";
-                        btnCompassStartCalib.Enabled = true;
-                        btnCompassSaveCalib.Enabled = false;
-                    }
-                    if (chars[1] == '1')
-                    {
-                        lblCompassOutputInquiryInfo.Text = "开启";
-                        btnCompassStartCalib.Enabled = false;
-                        btnCompassSaveCalib.Enabled = false;
-                    }
-                     */
-                    break;
-                default:
-                    break;
+                        if (temprollangel[0] == 48 && temprollangel[1] == 48)
+                        {
+                            rollangel[0] = 0x00;
+                            rollangel[1] = temprollangel[0];
+                            rollangel[2] = temprollangel[1];
+                        }
+                        //lblRollInfo.Text = str;
+                        break;
+                    case 'd':
+                        str = new string(chars, 1, chars.Length - 1);
+                        depth = Convert.ToDouble(str);
+                        str = string.Format("{0:000.0}", depth);
+                        if (Math.Abs(depth - nav1.GetDepth()) > 10) return;
+                        nav1.SetDepth(depth);
+                        break;
+                    case 'z':
+                        str = new string(chars, 1, chars.Length - 1);
+                        zgyro = Convert.ToDouble(str);
+                        str = string.Format("{0:000}", zgyro);
+                        nav1.SetGyro(zgyro);
+
+                        break;
+                    case 'o':
+                        /*
+                        if (chars[1] == '0')
+                        {
+                            lblCompassOutputInquiryInfo.Text = "关闭";
+                            btnCompassStartCalib.Enabled = true;
+                            btnCompassSaveCalib.Enabled = false;
+                        }
+                        if (chars[1] == '1')
+                        {
+                            lblCompassOutputInquiryInfo.Text = "开启";
+                            btnCompassStartCalib.Enabled = false;
+                            btnCompassSaveCalib.Enabled = false;
+                        }
+                         */
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -1608,38 +1789,66 @@ namespace WpfApp1
             while (true)
             {
                 Thread.Sleep(50);
-                double heading = 0.0;
-                double pitch = 0.0;
-                double roll = 0.0;
-                heading = mti.Yaw;
-                if (heading == 0) continue;
-                if (nav1.HeadingZeroSwitch == true)
+                if (nav1.NavigationType == Navigation.NavType.Mti)
                 {
-                    heading += nav1.HeadingZero;
-                    if (heading > 360)
-                        heading = heading - 360;
-                    if (heading < 0)
-                        heading = heading + 360;
+                    double heading = 0.0;
+                    double pitch = 0.0;
+                    double roll = 0.0;
+                    heading = mti.Yaw;
+                    if (heading == 0) continue;
+                    if (nav1.HeadingZeroSwitch == true)
+                    {
+                        heading += nav1.HeadingZero;
+                        if (heading > 360)
+                            heading = heading - 360;
+                        if (heading < 0)
+                            heading = heading + 360;
+                    }
+                    nav1.SetTrueHeading(heading);
+                    nav1.SetHeading(heading);
+
+                    pitch = mti.Pitch;
+                    nav1.SetPitch(pitch);
+
+                    roll = mti.Roll;
+                    nav1.SetRoll(roll);
                 }
-                nav1.SetTrueHeading(heading);
-                nav1.SetHeading(heading);
 
-                pitch = mti.Pitch;
-                nav1.SetPitch(pitch);
+                if (nav1.NavigationType == Navigation.NavType.Self)
+                {
+                    if (nav1.IsInstalled())
+                    {
+                        nav1.InquiryData('l');
+                    }
+                }
 
-                roll = mti.Roll;
-                nav1.SetRoll(roll);
+                if (nav1.NavigationType == Navigation.NavType.AH500)
+                {
+                    if (nav1.IsInstalled())
+                    {
+                        nav1.InquiryData('l');
+                    }
+                }
 
-                //if (nav1.IsInstalled())
-                //{
-                //    nav1.InquiryData('l');
-                //}
+                if (nav1.NavigationType == Navigation.NavType.DCM250B)
+                {
+                    if (nav1.IsInstalled())
+                    {
+                        nav1.InquiryData('l');
+                    }
+                }
             }
         }
 
         public static void CreateNavComm()
         {
             NavCommUserControl = new NavCommUserControl();
+        }
+
+        public static void CloseNavComm()
+        {
+            GlobalNavigation.NavCommUserControl.Close();
+            NavCommUserControl = null;
         }
 
         private static SerialSendData serialport2;
@@ -1715,7 +1924,7 @@ namespace WpfApp1
 
                                 if (_weidu2 == 0.0 || _jingdu2 == 0.0) return;
 
-                                if(nav1.GPSValid)
+                                if (nav1.GPSValid)
                                 {
                                     nav1.Latitude = _weidu2;
                                     nav1.Longitude = _jingdu2;
@@ -2016,15 +2225,15 @@ namespace WpfApp1
 
         public static void CloseBattery()
         {
-           try
-           {
+            try
+            {
                 serialport1.ClosePort();
                 if (threadBATCollecting != null) threadBATCollecting.Abort();
-           }
-           catch
-           {
+            }
+            catch
+            {
 
-           }
+            }
         }
 
         public static void InquiryBattery()
