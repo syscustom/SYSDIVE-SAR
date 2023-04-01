@@ -753,6 +753,7 @@ namespace WpfApp1
 
         public static void CreateVideo()
         {
+            
             vcx.BeginInit();
             vcx.Width = 352;
             vcx.Height = 288;
@@ -2081,6 +2082,7 @@ namespace WpfApp1
         private static Thread threadExternalCollecting;
         private static SerialSendData serialport1;
         public static int BrightLevel = 3;
+        public static int LightBrightLevel = 0;
 
         public static void CreateExternal()
         {
@@ -2092,11 +2094,15 @@ namespace WpfApp1
             if (SelectXMLData.GetConfiguration("NavType", "value") != "0")
             {
                 SendBright(BrightLevel);
+                if (Global.MountVision)
+                    GlobalExternal.MinLightBright();
                 threadExternalCollecting = new Thread(new ThreadStart(StartExternalInquiry));
                 threadExternalCollecting.Start();
             }
             else
                 SendOldBright(BrightLevel);
+
+
         }
 
         private static void SuccessfulDataReceived(object sender, ROV.Serial.ReceivedEventArgs e)
@@ -2211,6 +2217,34 @@ namespace WpfApp1
             char[] cmds;
             charlist.Add('M');
             charlist.Add('+');
+            charlist.Add(char.Parse(_level.ToString()));
+            charlist.Add((char)(0x0D));
+            cmds = (char[])charlist.ToArray(typeof(char));
+            serialport1.SendMessage(cmds);
+        }
+
+        public static int ToggleLightBright()
+        {
+            LightBrightLevel++;
+            if (LightBrightLevel > 2) LightBrightLevel = 0;
+            SendLightBright(LightBrightLevel);
+            return LightBrightLevel;
+        }
+
+        public static void MinLightBright()
+        {
+            LightBrightLevel = 0;
+            SendLightBright(LightBrightLevel);
+        }
+
+        public static void SendLightBright(int _level)
+        {
+            ArrayList charlist = new ArrayList();
+
+            char[] cmds;
+            charlist.Add('L');
+            charlist.Add('+');
+            charlist.Add('B');
             charlist.Add(char.Parse(_level.ToString()));
             charlist.Add((char)(0x0D));
             cmds = (char[])charlist.ToArray(typeof(char));

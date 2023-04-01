@@ -36,6 +36,7 @@ namespace WpfApp1
         DispatcherTimer tmrButtonCheck = new DispatcherTimer();
         DispatcherTimer tmrFormMonitor = new DispatcherTimer();
         DispatcherTimer tmrTopMost = new DispatcherTimer();
+        DispatcherTimer tmrDrawSonar = new DispatcherTimer();
 
         public frmNavigation()
         {
@@ -63,6 +64,10 @@ namespace WpfApp1
 
             tmrTopMost.Tick += new EventHandler(tmrTopMost_Tick);
             tmrTopMost.Interval = TimeSpan.FromSeconds(2);
+
+
+            tmrDrawSonar.Tick += new EventHandler(tmrDrawSonar_Tick);
+            tmrDrawSonar.Interval = TimeSpan.FromMilliseconds(40);
         }
 
         private void Power_Press()
@@ -159,27 +164,13 @@ namespace WpfApp1
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             tmrFormMonitor.Stop();
-            tmrButtonCheck.Stop();
-
-            Content_Nav.Content = null;
-            Content_Map.Content = null;
-
-            if (Global.MountVision && Global.VisionSwitch)
-            {
-                Video_Content.Content = null;
-            }
+            tmrButtonCheck.Stop();  
 
             tmrTopMost.Stop();
         }
 
         private void Sonar_ImageDataReceived(object sender, ImageEventArgs e)
         {
-
-            //e.Image.SavePPM("cimgsys" + i +".ppm");
-            //i++;
-            //Sonar_Img.Source = e.Image.GetBitmap();
-
-
             this.Sonar_Img.Dispatcher.Invoke(
                   new Action(
                        delegate
@@ -194,7 +185,16 @@ namespace WpfApp1
 
         private void DisposeAllComponent()
         {
+            tmrDrawSonar.Stop();
             tmrFormMonitor.Start();
+
+            Content_Nav.Content = null;
+            Content_Map.Content = null;
+
+            if (Global.MountVision && Global.VisionSwitch)
+            {
+                Video_Content.Content = null;
+            }
 
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 if (GlobalSonar.mainModel != null)
@@ -340,6 +340,7 @@ namespace WpfApp1
         {
             this.Topmost = Global.TopMost;
             tmrTopMost.Start();
+            tmrDrawSonar.Start();
         }
 
         private void Lbl_Clear_MouseUp(object sender, MouseButtonEventArgs e)
@@ -351,6 +352,30 @@ namespace WpfApp1
         {
             this.Topmost = Global.TopMost;
             this.Focus();
+        }
+
+        private BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
+        }
+
+        void tmrDrawSonar_Tick(object sender, EventArgs e)
+        {
+            byte[] bytesgrabwindows = Global.SonarWindow.SonarGrabWindows();
+            Sonar_Img.Source = LoadImage(bytesgrabwindows);
         }
 
 

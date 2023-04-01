@@ -5,10 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         xmlns:wfi ="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        xmlns:container="clr-namespace:AppContainers;assembly=AppContainers"
         mc:Ignorable="d"
         Title="frmVideo" Height="600" Width="1024"  WindowStyle="None" ResizeMode="NoResize" Background="Black" Closing="Window_Closing" SizeChanged="Window_SizeChanged" Loaded="Window_Loaded">
     <Grid>
-
+        <Image x:Name="Sonar_Img" HorizontalAlignment="Left" Height="119" Margin="49,370,0,0" VerticalAlignment="Top" Width="190"/>
+        <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Margin="42,0" Width="940"/>
+        <ContentControl x:Name="Content_Map" Content="ContentControl" HorizontalAlignment="Left" Height="118" Margin="800,370,0,0" VerticalAlignment="Top" Width="172"/>
+        <ContentControl x:Name="Video_Content" Content="Video_Content" HorizontalAlignment="Left" Height="500" Margin="90,5,0,0" VerticalAlignment="Top" Width="850"/>
+        <container:AppContainer x:Name="MapContainer" Margin="700,245,0,0" Width="235" Height="115" Background="Transparent"/>
+        <container:AppContainer x:Name="SonarContainer" Margin="0,225,650,0" Width="280" Height="140" Background="Transparent"/>
+        
         <Grid HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0,0"   ShowGridLines="True" Background="#FF4F4A4A" Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -102,9 +109,5 @@
                 </Label.RenderTransform>
             </Label>
         </Grid>
-        <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Margin="42,0" Width="940"/>
-        <ContentControl x:Name="Video_Content" Content="Video_Content" HorizontalAlignment="Left" Height="360" Margin="220,5,0,0" VerticalAlignment="Top" Width="640"/>
-        <ContentControl x:Name="Content_Map" Content="ContentControl" HorizontalAlignment="Left" Height="118" Margin="800,370,0,0" VerticalAlignment="Top" Width="172"/>
-        <Image x:Name="Sonar_Img" HorizontalAlignment="Left" Height="119" Margin="49,370,0,0" VerticalAlignment="Top" Width="190"/>
     </Grid>
 </Window>

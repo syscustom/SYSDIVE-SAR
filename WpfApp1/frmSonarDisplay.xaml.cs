@@ -78,6 +78,11 @@ namespace WpfApp1
         [DllImport("OculusSonar.dll", EntryPoint = "RepeatChanged")]//导入qtdialog.dll
         public static extern void RepeatChanged(bool ischecked);//声明qtdialog.dll里面的一个接口
 
+        [DllImport("OculusSonar.dll", EntryPoint = "GrabWindows")]//导入qtdialog.dll
+        public static extern IntPtr GrabWindows();//声明qtdialog.dll里面的一个接口
+        [DllImport("OculusSonar.dll", EntryPoint = "GrabWindowsLength")]//导入qtdialog.dll
+        public static extern int GrabWindowsLength();//声明qtdialog.dll里面的一个接口
+
         enum ConnectStatus
         {
             Detect = 0,
@@ -123,6 +128,18 @@ namespace WpfApp1
 
         bool IsStartRecordLog = false;
 
+        public unsafe byte[] SonarGrabWindows()
+        {
+            IntPtr pRet = GrabWindows();
+            int intptrlength = GrabWindowsLength();
+            byte* memBytePtr = (byte*)pRet.ToPointer();
+            byte[] target = new byte[intptrlength];
+            for (int i = 0; i < intptrlength; ++i)
+                target[i] = memBytePtr[i];
+
+            return target;
+        }
+
         public frmSonarDisplay()
         {
             InitializeComponent();
@@ -139,9 +156,6 @@ namespace WpfApp1
             {
                 GlobalSonar.mainModel.Sonar.ImageDataReceived += new EventHandler<ImageEventArgs>(Sonar_ImageDataReceived);
             }
-
-
-
 
             tmrSonarApp.Tick += new EventHandler(tmrSonarApp_Tick);
             tmrSonarApp.Interval = TimeSpan.FromSeconds(1);
@@ -569,8 +583,8 @@ namespace WpfApp1
                 double h = Convert.ToInt16(OculusContainer.Height);
                 w *= 1;
                 h *= 1;
+
                 showDialog(OculusContainer.ReturnHostPanel(), Convert.ToInt32(w), Convert.ToInt32(h));
-                
             }
         }
 
@@ -667,10 +681,10 @@ namespace WpfApp1
             //    Global.globalMap.Parent.SetValue(ContentPresenter.ContentProperty, null);
 
 
-            if (Global.MountVision && Global.VisionSwitch)
-            {
-                Video_Content.Content = Global.videohost;
-            }
+            //if (Global.MountVision && Global.VisionSwitch)
+            //{
+            //    Video_Content.Content = Global.videohost;
+            //}
         }
 
         void tmrSonarAppThird_Tick(object sender, EventArgs e)

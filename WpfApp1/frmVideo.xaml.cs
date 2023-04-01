@@ -16,7 +16,9 @@ using ProViewer4.Models;
 using BlueView.Sonar.Model;
 using BlueView.Sonar.Interfaces;
 using System.Windows.Threading;
-
+using System.Windows.Forms.Integration;
+using System.Windows.Forms;
+using System.IO;
 
 namespace WpfApp1
 {
@@ -28,12 +30,19 @@ namespace WpfApp1
 
         DispatcherTimer tmrButtonCheck = new DispatcherTimer();
         DispatcherTimer tmrFormMonitor = new DispatcherTimer();
+        DispatcherTimer tmrTopMost = new DispatcherTimer();
+        DispatcherTimer tmrDrawSonar = new DispatcherTimer();
+
+        ElementHost MapHost;
+        ElementHost SonarHost;
+
+        System.Windows.Controls.Image Sonar_Image;
 
         public frmVideo()
         {
             InitializeComponent();
             Content_Nav.Content = GlobalNavigation.NavCommUserControl;
-            Content_Map.Content = Global.globalMap;
+            //Content_Map.Content = Global.globalMap;
 
             if (Global.MountVision)
                 Video_Content.Content = Global.videohost;
@@ -60,6 +69,12 @@ namespace WpfApp1
             tmrFormMonitor.Tick += new EventHandler(tmrFormMonitor_Tick);
             tmrFormMonitor.Interval = TimeSpan.FromSeconds(2);
 
+            tmrTopMost.Tick += new EventHandler(tmrTopMost_Tick);
+            tmrTopMost.Interval = TimeSpan.FromSeconds(2);
+
+            tmrDrawSonar.Tick += new EventHandler(tmrDrawSonar_Tick);
+            tmrDrawSonar.Interval = TimeSpan.FromMilliseconds(40);
+
         }
 
         private void Power_Press()
@@ -77,8 +92,7 @@ namespace WpfApp1
 
         private void Light_Press()
         {
-
-
+            GlobalExternal.LightBrightLevel = GlobalExternal.ToggleLightBright();
         }
 
         private void Lbl_Light_MouseUp(object sender, MouseButtonEventArgs e)
@@ -179,14 +193,29 @@ namespace WpfApp1
         {
             tmrFormMonitor.Stop();
             tmrButtonCheck.Stop();
+
+            tmrTopMost.Stop();
         }
 
         private void DisposeAllComponent()
         {
+            tmrDrawSonar.Stop();
             tmrFormMonitor.Start();
-            Content_Map.Content = null;
+            //Content_Map.Content = null;
             Content_Nav.Content = null;
             Video_Content.Content = null;
+
+            if (MapHost != null)
+            {
+                MapHost.Child = null;
+                MapContainer.ReturnHPanel().Controls.Remove(MapHost);
+            }
+
+            if (SonarHost != null)
+            {
+                SonarHost.Child = null;
+                SonarContainer.ReturnHPanel().Controls.Remove(SonarHost);
+            }
 
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 if (GlobalSonar.mainModel != null)
@@ -299,6 +328,27 @@ namespace WpfApp1
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = Global.TopMost;
+            tmrTopMost.Start();
+            tmrDrawSonar.Start();
+
+            MapHost = new ElementHost();
+            MapHost.Dock = DockStyle.Fill;
+            MapContainer.ReturnHPanel().Controls.Add(MapHost);
+            MapHost.Child = Global.globalMap;
+
+
+            Sonar_Image = new System.Windows.Controls.Image();
+            Sonar_Image.Visibility = Visibility.Hidden;
+            Sonar_Image.Height = 119;
+            Sonar_Image.Width = 190;
+            Thickness thickness = new Thickness(49, 370, 0, 0);
+            Sonar_Image.Margin = thickness;  
+
+            SonarHost = new ElementHost();
+            SonarHost.Dock = DockStyle.Fill;
+            SonarContainer.ReturnHPanel().Controls.Add(SonarHost);
+            SonarHost.Child = Sonar_Image;
+            Sonar_Image.Visibility = Visibility.Visible;
         }
 
         private void Lbl_Display_MouseUp(object sender, MouseButtonEventArgs e)
@@ -311,6 +361,36 @@ namespace WpfApp1
             DisposeAllComponent();
             Global.SonarWindow.DoShow();
             this.Close();
+        }
+
+        private BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
+        }
+
+        void tmrDrawSonar_Tick(object sender, EventArgs e)
+        {
+            byte[] bytesgrabwindows = Global.SonarWindow.SonarGrabWindows();
+            Sonar_Image.Source = LoadImage(bytesgrabwindows);
+        }
+
+        void tmrTopMost_Tick(object sender, EventArgs e)
+        {
+            this.Topmost = Global.TopMost;
+            this.Focus();
         }
     }
 }

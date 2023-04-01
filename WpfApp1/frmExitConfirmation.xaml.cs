@@ -169,8 +169,13 @@ namespace WpfApp1
 
             GlobalNavigation.CloseNav();
 
-            if (Global.MountVision && Global.VisionSwitch)
-                Global.CloseVideo();
+            if (Global.MountVision)
+            {
+                GlobalExternal.MinLightBright();
+                if (Global.VisionSwitch)
+                    Global.CloseVideo();
+            }
+
 
             /*
             GlobalNavigation.CloseNav();
