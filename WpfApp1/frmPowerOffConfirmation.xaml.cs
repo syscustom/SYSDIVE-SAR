@@ -203,6 +203,9 @@ namespace WpfApp1
             GlobalDVL.CloseDVL();
             */
 
+            if (Global.MountVision && Global.VisionSwitch)
+                Global.CloseVideo();
+
             Global.SonarWindow.DisconnectSonar();
             GlobalUpBoard.CloseUpBoard();
 

@@ -35,8 +35,9 @@ namespace WpfApp1
             Content_Nav.Content = GlobalNavigation.NavCommUserControl;
             Content_Map.Content = Global.globalMap;
 
-            if (Global.VisionSwitch)
-                Video_Content.Content = Global.host;
+            if (Global.MountVision)
+                Video_Content.Content = Global.videohost;
+
 
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 GlobalSonar.mainModel.Sonar.ImageDataReceived += new EventHandler<ImageEventArgs>(Sonar_ImageDataReceived);
@@ -114,11 +115,28 @@ namespace WpfApp1
             this.Close(); ;
         }
 
+        private void VisionOnOff()
+        {
+            Global.VisionSwitch = !Global.VisionSwitch;
+            if (Global.VisionSwitch)
+            {
+                SelectXMLData.SaveConfiguration("VisionSwitch", "value", "1");
+                Global.CreateVideo();
+            }
+            else
+            {
+                SelectXMLData.SaveConfiguration("VisionSwitch", "value", "0");
+                Global.CloseVideo();
+            }
+        }
+
         private void Camera_Press()
         {
-            //Global.ResizeVideo(300, 300);
-            if (Global.VisionSwitch)
-                Global.ToggleVideo();
+            if (Global.MountVision)
+            {
+                VisionOnOff();
+            }
+
         }
 
         private void Lbl_Camera_MouseUp(object sender, MouseButtonEventArgs e)
@@ -128,7 +146,7 @@ namespace WpfApp1
 
         private void SnapShot_Press()
         {
-            if (Global.VisionSwitch)
+            if (Global.MountVision && Global.VisionSwitch)
                 Global.VideoSnapshot();
         }
 
@@ -161,15 +179,15 @@ namespace WpfApp1
         {
             tmrFormMonitor.Stop();
             tmrButtonCheck.Stop();
-
-            if (Global.MountVision && Global.VisionSwitch)
-                Global.ClosePreviewVideo();
         }
 
         private void DisposeAllComponent()
         {
             tmrFormMonitor.Start();
             Content_Map.Content = null;
+            Content_Nav.Content = null;
+            Video_Content.Content = null;
+
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 if (GlobalSonar.mainModel != null)
                 {
@@ -264,7 +282,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[9] == 0 && GlobalUpBoard.ButtonState[9] == false) //Pressed  Button
                 {
-                    
+                    Display_Press();
                     GlobalUpBoard.ButtonState[9] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[9] == 1 && GlobalUpBoard.ButtonState[9] == true)
@@ -281,6 +299,18 @@ namespace WpfApp1
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = Global.TopMost;
+        }
+
+        private void Lbl_Display_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Display_Press();
+        }
+
+        private void Display_Press()
+        {
+            DisposeAllComponent();
+            Global.SonarWindow.DoShow();
+            this.Close();
         }
     }
 }

@@ -46,8 +46,7 @@ namespace WpfApp1
 
             if (Global.MountVision && Global.VisionSwitch)
             {
-                Video_Content.Content = Global.host;
-                Global.OpenPreviewVideo();
+                Video_Content.Content = Global.videohost;
             }
 
             LstWayPoints = Global.LstWayPoints;
@@ -142,7 +141,13 @@ namespace WpfApp1
         private void Display_Press()
         {
             DisposeAllComponent();
-            Global.SonarWindow.DoShow();
+            if (Global.MountVision == true)
+            {
+                frmVideo frmVideo = new frmVideo();
+                frmVideo.Show();
+            }
+            else
+                Global.SonarWindow.DoShow();
             this.Close();
         }
 
@@ -156,10 +161,12 @@ namespace WpfApp1
             tmrFormMonitor.Stop();
             tmrButtonCheck.Stop();
 
+            Content_Nav.Content = null;
+            Content_Map.Content = null;
+
             if (Global.MountVision && Global.VisionSwitch)
             {
-                Global.ClosePreviewVideo();
-                Content_Map.Content = null;
+                Video_Content.Content = null;
             }
 
             tmrTopMost.Stop();
@@ -188,7 +195,7 @@ namespace WpfApp1
         private void DisposeAllComponent()
         {
             tmrFormMonitor.Start();
-            Content_Map.Content = null;
+
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 if (GlobalSonar.mainModel != null)
                 {

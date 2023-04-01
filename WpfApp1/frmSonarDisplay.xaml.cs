@@ -111,6 +111,8 @@ namespace WpfApp1
         ElementHost GainTitle;
         ElementHost GainHost;
 
+        ElementHost VideoHost;
+
         System.Windows.Controls.Label lblRangeTitle;
         System.Windows.Controls.Label lblRange;
         System.Windows.Controls.Label lblFreqTitle;
@@ -369,6 +371,13 @@ namespace WpfApp1
                 MapHost.Child = null;
                 MapContainer.ReturnHPanel().Controls.Remove(MapHost);
             }
+
+            if(Global.MountVision)
+                if(VideoHost !=null)
+                {
+                    VideoHost.Child = null;
+                    VideoContainer.ReturnHPanel().Controls.Remove(VideoHost);
+                }
         }
 
         private void DisposeAllComponent()
@@ -423,6 +432,13 @@ namespace WpfApp1
                 GainHost.Child = null;
                 SoanrGainInfoContainer.ReturnHPanel().Controls.Remove(GainHost);
             }
+
+            if (Global.MountVision)
+                if (VideoHost != null)
+                {
+                    VideoHost.Child = null;
+                    VideoContainer.ReturnHPanel().Controls.Remove(VideoHost);
+                }
 
             //if (GlobalOculus.isInstalled && GlobalOculus.SonarSwitch)
             if (GlobalOculus.isInstalled)
@@ -653,8 +669,7 @@ namespace WpfApp1
 
             if (Global.MountVision && Global.VisionSwitch)
             {
-                Video_Content.Content = Global.host;
-                Global.OpenPreviewVideo();
+                Video_Content.Content = Global.videohost;
             }
         }
 
@@ -689,7 +704,7 @@ namespace WpfApp1
                 }
                 else
                 {
-                    string path = System.Environment.CurrentDirectory + "\\" + "Oculus_M750d_1200kHz_River_Fish.oculus";
+                    string path = System.Environment.CurrentDirectory + "\\" + "DemoShow.oculus";
                     IntPtr init = Marshal.StringToHGlobalAnsi(path);
 
                     OculusOpenFile(init, true);
@@ -785,6 +800,14 @@ namespace WpfApp1
             MapHost.Dock = DockStyle.Fill;
             MapContainer.ReturnHPanel().Controls.Add(MapHost);
             MapHost.Child = Global.globalMap;
+
+            if (Global.MountVision && Global.VisionSwitch)
+            {
+                VideoHost = new ElementHost();
+                VideoHost.Dock = DockStyle.Fill;
+                VideoContainer.ReturnHPanel().Controls.Add(VideoHost);
+                VideoHost.Child = Global.videohost;
+            }
 
             tmrTopMost.Start();
 

@@ -19,8 +19,7 @@ namespace WpfApp1
             // Create the application.
             Application app = new Application();
 
-            // Create the main window.
-            MainWindow win = new MainWindow();
+
 
             Global.SavingMainDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\" + "SYSDIVESAR";
             if (System.IO.Directory.Exists(Global.SavingMainDirectory) == false)
@@ -34,6 +33,8 @@ namespace WpfApp1
             Global.SavingMissionDirectory = Global.SavingMainDirectory + "\\" + "Mission" + "\\";
             if (System.IO.Directory.Exists(Global.SavingMissionDirectory) == false)
                 System.IO.Directory.CreateDirectory(Global.SavingMissionDirectory);
+
+
 
             Global.RecordSamplingRate = Convert.ToInt32(SelectXMLData.GetConfiguration("RecordSamplingRate", "value"));
 
@@ -85,6 +86,18 @@ namespace WpfApp1
                 Global.MountVision = false;
             else if (SelectXMLData.GetConfiguration("MountVision", "value") == "1")
                 Global.MountVision = true;
+
+            if(Global.MountVision)
+            {
+                Global.SavingImagesDirectory = Global.SavingMainDirectory + "\\" + "Images" + "\\";
+                if (System.IO.Directory.Exists(Global.SavingImagesDirectory) == false)
+                    System.IO.Directory.CreateDirectory(Global.SavingImagesDirectory);
+
+                Global.SavingVideosDirectory = Global.SavingMainDirectory + "\\" + "Videos" + "\\";
+                if (System.IO.Directory.Exists(Global.SavingVideosDirectory) == false)
+                    System.IO.Directory.CreateDirectory(Global.SavingVideosDirectory);
+            }
+
 
             if (SelectXMLData.GetConfiguration("VisionSwitch", "value") == "0")
                 Global.VisionSwitch = false;
@@ -154,6 +167,8 @@ namespace WpfApp1
 
             GlobalNavigation.CreateGPS();
 
+            GlobalExternal.BrightLevel = Convert.ToInt32(SelectXMLData.GetConfiguration("BrightLevel", "value"));
+
             GlobalExternal.CreateExternal();
 
             GlobalBattery.CreateBattery();
@@ -161,7 +176,7 @@ namespace WpfApp1
             if (SelectXMLData.GetConfiguration("ServiceMonitor", "value") == "1")
                 Global.CreateServiceMonitor();
 
-            GlobalExternal.BrightLevel = Convert.ToInt32(SelectXMLData.GetConfiguration("BrightLevel", "value"));
+
 
             if (SelectXMLData.GetConfiguration("MapNorth", "value") == "0")
                 Global.mapnorth = Global.MapNorth.North;
@@ -184,6 +199,9 @@ namespace WpfApp1
             //frmMicronDST micronDST = new frmMicronDST();
             // Launch the application and show the main window.
             //app.Run(micronDST);
+            // Create the main window.
+            MainWindow win = new MainWindow();
+
 
             frmSonarDisplay frmSonarDisplay = new frmSonarDisplay();
             frmSonarDisplay.Show();

@@ -113,6 +113,7 @@
             <MenuItem  Foreground="White" Header="传感器" FontSize="22" Width="290"/>
             <MenuItem  Foreground="White" Header="导航" FontSize="22" Width="290"/>
             <MenuItem  Foreground="White" Header="显示" FontSize="22" Width="290"/>
+            <MenuItem  Foreground="White" Header="卫星导航(GNSS)" FontSize="22" Width="290"/>
         </ListView>
         <Image x:Name="imgUpArrow_1" HorizontalAlignment="Left" Height="45" Margin="982,162,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="0.5,0.5" MouseUp="ImgUpArrow_1_MouseUp">
             <Image.RenderTransform>

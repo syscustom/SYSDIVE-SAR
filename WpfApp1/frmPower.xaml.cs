@@ -166,6 +166,10 @@ namespace WpfApp1
                     frmDiveLog frmDiveLog = new frmDiveLog();
                     frmDiveLog.Show();
                     break;
+                case "frmGNSS":
+                    frmGNSSInformation frmGNSSInformation = new frmGNSSInformation();
+                    frmGNSSInformation.Show();
+                    break;
             }
             this.Close();
         }
@@ -437,7 +441,8 @@ namespace WpfApp1
 
         private void Lbl_Camera_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            VisionOnOff();
+            if (Global.MountVision)
+                VisionOnOff();
         }
 
         void tmrTopMost_Tick(object sender, EventArgs e)

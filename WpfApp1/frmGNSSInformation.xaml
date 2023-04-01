@@ -1,0 +1,125 @@
+﻿<Window x:Class="WpfApp1.frmGNSSInformation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="frmGNSSInformation" Height="600" Width="1024"  WindowStyle="None" ResizeMode="NoResize" Background="Black" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+    <Grid>
+        <Grid HorizontalAlignment="Right" Height="600" Margin="758,0,0,0" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.562,0.736"   ShowGridLines="True" Background="#FF4F4A4A">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Blue"/>
+
+            <Label x:Name="lbl_Home" Content="主 页" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="0" MouseUp="Lbl_Home_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Select" Content="选 择" HorizontalAlignment="Center" Height="34" Margin="-14,45,-14,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="1">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Delete" Content="删 除" HorizontalAlignment="Center" Height="34" Margin="-13,41,-15,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="2">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Edit" Content="编 辑" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="3">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_ADD" Content="添 加" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="4">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+
+
+
+        </Grid>
+        <Grid HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0,0"   ShowGridLines="True" Background="#FF4F4A4A" Margin="0,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="Red"/>
+            <Border Grid.Row="3" Background="Black"/>
+            <Label x:Name="lbl_Power" Content="电 源" HorizontalAlignment="Center" Height="34" Margin="-15,41,-17,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Power_MouseUp">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Label x:Name="lbl_Missions" Content="任 务" HorizontalAlignment="Center" Height="34" Margin="-16,39,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="4">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <Image x:Name="imgUpArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="0.5,0.5" Grid.Row="1" MouseUp="ImgUpArrow_MouseUp">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="180"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <Image x:Name="imgDownArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" Grid.Row="2" MouseUp="ImgDownArrow_MouseUp"/>
+
+        </Grid>
+        <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Margin="42,0" Width="940"/>
+        <Label x:Name="lblFormTitle" Content="卫 星 导 航 (GNSS)" HorizontalAlignment="Left" Margin="60,6,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="324" Foreground="White" FontSize="24"/>
+        <Label x:Name="lblReceiver" Content="定位系统：" HorizontalAlignment="Left" Height="35" Margin="594,45,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblQuality" Content="信号质量：" HorizontalAlignment="Left" Height="35" Margin="750,45,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblPDOP" Content="PDOP：" HorizontalAlignment="Left" Height="34" Margin="594,136,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <Label x:Name="lblHDOP" Content="HDOP：" HorizontalAlignment="Left" Height="34" Margin="750,136,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+
+    </Grid>
+</Window>

@@ -313,10 +313,30 @@ namespace ROV.Serial
                             char[] cmds;
                             cmds = (char[])malCmdQueue[0];
                             malCmdQueue.RemoveAt(0);
-                            m_current[0] = cmds[0];
-                            m_current[1] = cmds[1];
-                            m_current[2] = cmds[3];
-                            m_current[3] = cmds[4];
+                            if(cmds[0] == 'M' && cmds.Length==5)
+                            {
+                                m_current[0] = cmds[0];
+                                m_current[1] = cmds[1];
+                                m_current[2] = cmds[3];
+                                m_current[3] = cmds[4];
+                            }
+
+                            if (cmds[0] == 'M' && cmds.Length == 4)
+                            {
+                                m_current[0] = cmds[0];
+                                m_current[1] = cmds[1];
+                                m_current[2] = cmds[2];
+                                m_current[3] = cmds[3];
+                            }
+
+                            if (cmds[0] == 'c' && cmds.Length == 6)
+                            {
+                                m_current[0] = cmds[0];
+                                m_current[1] = cmds[1];
+                                m_current[2] = cmds[3];
+                                m_current[3] = cmds[4];
+                            }
+
                             maltxcurrent.Add(m_current);
                             serialPort1.Write(cmds, 0, cmds.Length);
                         }
@@ -1315,61 +1335,6 @@ namespace ROV.Serial
             char[] cmds;
             switch (_dt)
             {
-                case DataType.Motor:
-                    charlist.Add('u');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    switch (_dev)
-                    {
-                        case '1':
-                            malCmdQueueWithThruster[0] = cmds;
-                            break;
-                        case '2':
-                            malCmdQueueWithThruster[1] = cmds;
-                            break;
-                        case '3':
-                            malCmdQueueWithThruster[2] = cmds;
-                            break;
-                        case '4':
-                            malCmdQueueWithThruster[3] = cmds;
-                            break;
-                        case '5':
-                            malCmdQueueWithThruster[4] = cmds;
-                            break;
-                        case '8':
-                            malCmdQueueWithThruster[5] = cmds;
-                            break;
-                    }
-                    break;
-                case DataType.Lights:
-                    charlist.Add('l');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    //malCmdQueue.Add(cmds);
-                    malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
-                    break;
-                case DataType.Tilt:
-                    charlist.Add('p');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    //malCmdQueue.Add(cmds);
-                    malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
-                    break;
                 case DataType.Nav:
                     charlist.Add('c');
                     charlist.Add(_dev);
@@ -1395,54 +1360,6 @@ namespace ROV.Serial
                     charlist.Add((char)(0x0D));
                     cmds = (char[])charlist.ToArray(typeof(char));
                     malCmdQueue.Add(cmds);
-                    break;
-                case DataType.Altimeter:
-                    charlist.Add('a');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    //malCmdQueue.Add(cmds);
-                    malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
-                    break;
-                case DataType.JB:
-                    charlist.Add('j');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    //malCmdQueue.Add(cmds);
-                    malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
-                    break;
-                case DataType.SingleManip:
-                    charlist.Add('m');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    //malCmdQueue.Add(cmds);
-                    malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
-                    break;
-                case DataType.LinearActuator:
-                    charlist.Add('n');
-                    charlist.Add(_dev);
-                    charlist.Add(_len);
-                    charlist.Add(_cmd);
-                    for (int i = 0; i < cc.Length; i++)
-                        charlist.Add(cc[i]);
-                    charlist.Add((char)(0x0D));
-                    cmds = (char[])charlist.ToArray(typeof(char));
-                    //malCmdQueue.Add(cmds);
-                    malCmdQueueWithPriority.Add(new SerialCMD() { Cmds = cmds, Priority = _priority });
                     break;
             }
 

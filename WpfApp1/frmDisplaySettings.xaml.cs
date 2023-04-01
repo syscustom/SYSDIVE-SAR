@@ -100,9 +100,13 @@ namespace WpfApp1
 
         private void Bright_Press()
         {
-            GlobalExternal.BrightLevel = GlobalExternal.ToggleBright();
-            lblBrightLevel.Content = GlobalExternal.BrightLevel.ToString();
+            if (GlobalNavigation.nav1.NavigationType == Navigation.NavType.Self)
+                GlobalExternal.BrightLevel = GlobalExternal.ToggleOldBright();
+            else
+                GlobalExternal.BrightLevel = GlobalExternal.ToggleBright();
 
+            lblBrightLevel.Content = GlobalExternal.BrightLevel.ToString();
+            SelectXMLData.SaveConfiguration("BrightLevel", "value", GlobalExternal.BrightLevel.ToString());
         }
 
         private void Lbl_Bright_MouseUp(object sender, MouseButtonEventArgs e)

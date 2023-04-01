@@ -64,7 +64,10 @@ namespace WpfApp1
             tmrTopMost.Tick += new EventHandler(tmrTopMost_Tick);
             tmrTopMost.Interval = TimeSpan.FromSeconds(2);
 
-
+            if (Global.MountVision == true)
+            {
+                btnVideo.Visibility = Visibility.Visible;
+            }
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -123,7 +126,10 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[3] == 0 && GlobalUpBoard.ButtonState[3] == false) //Pressed Video Button
                 {
-                    //btnVideo.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                    if (Global.MountVision == true)
+                    {
+                        btnVideo.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                    }
                     GlobalUpBoard.ButtonState[3] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[3] == 1 && GlobalUpBoard.ButtonState[3] == true)

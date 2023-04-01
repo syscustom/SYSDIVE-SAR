@@ -81,6 +81,8 @@ namespace WpfApp1
         public static string SavingMainDirectory = "";
         public static string SavingRecordDirectory = "";
         public static string SavingMissionDirectory = "";
+        public static string SavingImagesDirectory = "";
+        public static string SavingVideosDirectory = "";
         public static int RecordSamplingRate = 0;
 
         public static Map globalMap = new Map();
@@ -733,9 +735,13 @@ namespace WpfApp1
 
         public static DiveType DiveMode = DiveType.Float;
 
-        // public static VideoCapX vcx = new VideoCapX();
         public static AxVideoCapX vcx = new AxVideoCapX();
-        public static WindowsFormsHost host = new WindowsFormsHost();
+        public static WindowsFormsHost videohost = new WindowsFormsHost();
+
+        private static Thread threadVideoMonitoring;
+        private static bool videoStartRecorded = false;
+        private static int videoRecordedIndex = 1;
+        private static string videoRecordedName = "";
 
         public static void InitVideo()
         {
@@ -743,17 +749,16 @@ namespace WpfApp1
 
         }
 
+
+
         public static void CreateVideo()
         {
-
             vcx.BeginInit();
-            vcx.Width = 380;
-            vcx.Height = 370;
-            host.Child = vcx;
+            vcx.Width = 352;
+            vcx.Height = 288;
+            videohost.Child = vcx;
             vcx.EndInit();
             vcx.BackColor = System.Drawing.Color.Black;
-
-
 
             try
             {
@@ -801,8 +806,38 @@ namespace WpfApp1
             catch
             {
 
+            }
 
+            OpenPreviewVideo();
 
+            threadVideoMonitoring = new Thread(new ThreadStart(StartVideoMonitoring));
+            threadVideoMonitoring.Start();
+        }
+
+        private static void StartVideoMonitoring()
+        {
+            while (true)
+            {
+                Thread.Sleep(500);
+                if (Global.IsStartRecordLog == true && videoStartRecorded == false)
+                {
+                    if (videoRecordedName != Global.RecordLogFileName)
+                    {
+                        videoRecordedName = Global.RecordLogFileName;
+                        videoRecordedIndex = 1;
+                    }
+
+                    videoStartRecorded = true;
+                    vcx.CapFilename = Global.SavingVideosDirectory + Global.RecordLogFileName + videoRecordedIndex.ToString() + ".avi";
+                    vcx.StartCapture();
+
+                    videoRecordedIndex++;
+                }
+                else if (Global.IsStartRecordLog == false && videoStartRecorded == true)
+                {
+                    videoStartRecorded = false;
+                    vcx.StopCapture();
+                }
             }
         }
 
@@ -838,27 +873,33 @@ namespace WpfApp1
         {
             if (vcx.Connected)
             {
-                string path = "";
-                string assemblyFolder = System.Windows.Forms.Application.StartupPath;
-                path = assemblyFolder + "\\images\\" + DateTime.Now.ToFileTime() + ".jpg";
-                //vcx.GrabFrame().Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
+                string path = Global.SavingImagesDirectory + DateTime.Now.ToFileTime() + ".jpg";
+                vcx.GrabFrame().Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
 
         }
 
         public static void CloseVideo()
         {
+            if (threadVideoMonitoring != null) threadVideoMonitoring.Abort();
+
+            if (videoStartRecorded == true)
+            {
+                videoStartRecorded = false;
+                vcx.StopCapture();
+            }
+
+
             if (vcx.Connected)
             {
                 vcx.Preview = false;
                 vcx.Connected = false;
             }
 
-            if (host != null)
+            if (videohost != null)
             {
-                host.Child = null;
+                videohost.Child = null;
             }
-
         }
 
         public static void CallService()
@@ -1395,10 +1436,10 @@ namespace WpfApp1
             if (SelectXMLData.GetConfiguration("NavType", "value") == "0")
             {
                 serialport1 = new SerialSendData();
-                //serialport1.OnDataReceived += new SerialSendData.UserRequest(DataReceived);
-                //serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
-                //serialport1.OnNavDataReceived += new SerialSendData.UserRequest(NavDataReceived);
-                //serialport1.OpenPort("COM12", 57600, SerialSendData.SerialType.NavTelemetry); //主通信
+                serialport1.OnDataReceived += new SerialSendData.UserRequest(DataReceived);
+                serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
+                serialport1.OnNavDataReceived += new SerialSendData.UserRequest(NavDataReceived);
+                serialport1.OpenPort(SelectXMLData.GetConfiguration("NavTelemetry", "value"), 57600, SerialSendData.SerialType.NavTelemetry); //主通信
                 nav1 = new Navigation('1', ref serialport1);
                 nav1.NavigationType = Navigation.NavType.Self;
 
@@ -1455,10 +1496,10 @@ namespace WpfApp1
         public static void CloseNav()
         {
             serialport1.ClosePort();
-            if (mti != null)
-                mti.ClosePort();
+            if (nav1.NavigationType == Navigation.NavType.Mti)
+                if (mti != null)
+                    mti.ClosePort();
             if (threadNavCollecting != null) threadNavCollecting.Abort();
-
         }
 
         private static void DataReceived(object sender, ROV.Serial.ReceivedEventArgs e)
@@ -1615,7 +1656,6 @@ namespace WpfApp1
             double zgyro = 0.0;
             double pitch = 0.0;
             double roll = 0.0;
-            double temperature = 0.0;
 
             if (nav1.NavigationType == Navigation.NavType.Self)
             {
@@ -1625,8 +1665,6 @@ namespace WpfApp1
                         str = new string(chars, 1, chars.Length - 1);
                         string[] sArray = str.Split(',');
 
-
-                        /*
                         heading = Convert.ToDouble(sArray[0]);
                         if (heading == 0) return;
                         if (nav1.HeadingZeroSwitch == true)
@@ -1639,17 +1677,14 @@ namespace WpfApp1
                         }
                         nav1.SetTrueHeading(heading);
                         nav1.SetHeading(heading);
-                        */
 
-                        depth = Convert.ToDouble(sArray[0]);
-                        depth = (depth - 101300) / (nav1.FluidDensity * 9.80665);
+                        depth = Convert.ToDouble(sArray[1]);
                         if (nav1.DepthZeroSwitch == true)
                             depth = depth - nav1.DepthZero;
                         depth = Math.Round(depth, 2);
                         //if (Math.Abs(depth - nav1.GetDepth()) > 10) return;
                         nav1.SetDepth(depth);
 
-                        /*
                         zgyro = Convert.ToDouble(sArray[2]);
                         nav1.SetGyro(zgyro);
 
@@ -1658,9 +1693,6 @@ namespace WpfApp1
 
                         roll = Convert.ToDouble(sArray[4]);
                         nav1.SetRoll(roll);
-                        */
-                        temperature = Convert.ToDouble(sArray[1]);
-
                         break;
                     case 'a':
                         str = new string(chars, 1, chars.Length - 1);
@@ -2056,11 +2088,15 @@ namespace WpfApp1
             serialport1.OnSuccessfulDataReceived += new SerialSendData.UserRequest(SuccessfulDataReceived);
             serialport1.OnNavDataReceived += new SerialSendData.UserRequest(NavDataReceived);
             serialport1.OpenPort(SelectXMLData.GetConfiguration("EXTPORT", "value"), 57600, SerialSendData.SerialType.EXTPORT); //主通信
-            BrightLevel = 3;
-            SendBright(BrightLevel);
-            threadExternalCollecting = new Thread(new ThreadStart(StartExternalInquiry));
-            threadExternalCollecting.Start();
 
+            if (SelectXMLData.GetConfiguration("NavType", "value") != "0")
+            {
+                SendBright(BrightLevel);
+                threadExternalCollecting = new Thread(new ThreadStart(StartExternalInquiry));
+                threadExternalCollecting.Start();
+            }
+            else
+                SendOldBright(BrightLevel);
         }
 
         private static void SuccessfulDataReceived(object sender, ROV.Serial.ReceivedEventArgs e)
@@ -2084,33 +2120,13 @@ namespace WpfApp1
         {
             char[] chars = e.DataReceived;
             string str;
-            double heading = 0.0;
             double depth = 0.0;
-            double zgyro = 0.0;
-            double pitch = 0.0;
-            double roll = 0.0;
             double temperature = 0.0;
             switch (chars[0])
             {
                 case 'l':
                     str = new string(chars, 1, chars.Length - 1);
                     string[] sArray = str.Split(',');
-
-
-                    /*
-                    heading = Convert.ToDouble(sArray[0]);
-                    if (heading == 0) return;
-                    if (nav1.HeadingZeroSwitch == true)
-                    {
-                        heading += nav1.HeadingZero;
-                        if (heading > 360)
-                            heading = heading - 360;
-                        if (heading < 0)
-                            heading = heading + 360;
-                    }
-                    nav1.SetTrueHeading(heading);
-                    nav1.SetHeading(heading);
-                    */
 
                     depth = Convert.ToDouble(sArray[0]);
 
@@ -2122,16 +2138,6 @@ namespace WpfApp1
                     //if (Math.Abs(depth - nav1.GetDepth()) > 10) return;
                     GlobalNavigation.nav1.SetDepth(depth);
 
-                    /*
-                    zgyro = Convert.ToDouble(sArray[2]);
-                    nav1.SetGyro(zgyro);
-
-                    pitch = Convert.ToDouble(sArray[3]);
-                    nav1.SetPitch(pitch);
-
-                    roll = Convert.ToDouble(sArray[4]);
-                    nav1.SetRoll(roll);
-                    */
                     temperature = Convert.ToDouble(sArray[1]);
                     break;
                 default:
@@ -2176,6 +2182,14 @@ namespace WpfApp1
             return BrightLevel;
         }
 
+        public static int ToggleOldBright()
+        {
+            BrightLevel++;
+            if (BrightLevel > 7) BrightLevel = 0;
+            SendOldBright(BrightLevel);
+            return BrightLevel;
+        }
+
         public static void SendBright(int _level)
         {
             ArrayList charlist = new ArrayList();
@@ -2184,6 +2198,19 @@ namespace WpfApp1
             charlist.Add('M');
             charlist.Add('+');
             charlist.Add('B');
+            charlist.Add(char.Parse(_level.ToString()));
+            charlist.Add((char)(0x0D));
+            cmds = (char[])charlist.ToArray(typeof(char));
+            serialport1.SendMessage(cmds);
+        }
+
+        public static void SendOldBright(int _level)
+        {
+            ArrayList charlist = new ArrayList();
+
+            char[] cmds;
+            charlist.Add('M');
+            charlist.Add('+');
             charlist.Add(char.Parse(_level.ToString()));
             charlist.Add((char)(0x0D));
             cmds = (char[])charlist.ToArray(typeof(char));

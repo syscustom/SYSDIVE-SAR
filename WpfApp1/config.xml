@@ -9,7 +9,7 @@
   <SonarType value="2">
   </SonarType >
 
-  <NavType value="3">
+  <NavType value="0">
   </NavType >
 
   <VisionSwitch value="0">
@@ -54,7 +54,7 @@
   <MapNorth value="0">
   </MapNorth>
 
-  <SonarDemoShow value="0">
+  <SonarDemoShow value="1">
   </SonarDemoShow>
 
   <DefaultLat value="39.0565">
@@ -72,7 +72,7 @@
   <DVLPORT value="COM6">
   </DVLPORT>
 
-  <MountVision value="0">
+  <MountVision value="1">
   </MountVision>
 
   <FluidDensity value="997.0">
