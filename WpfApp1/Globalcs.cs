@@ -684,6 +684,22 @@ namespace WpfApp1
 
         }
 
+        public static void ClearCurrentToActiveRoute()
+        {
+            for (int i = 0; i < globalMap.Markers.Count; i++)
+            {
+                if (globalMap.Markers[i].GetType() == typeof(GMapRoute))
+                {
+                    GMapRoute gmRoute = (GMapRoute)globalMap.Markers[i];
+                    if (gmRoute.Tag.ToString() == "CTARoute")
+                    {
+                        gmRoute.Clear();
+                        break;
+                    }
+                }
+            }
+        }
+
         public static void CleartAllCurrentPointsRoute()
         {
             for (int i = 0; i < globalMap.Markers.Count; i++)
@@ -698,7 +714,6 @@ namespace WpfApp1
                     }
                 }
             }
-
         }
 
         public static void RemoveAllRoute()
@@ -764,6 +779,9 @@ namespace WpfApp1
             if (WaypointActiveMarker != null)
                 WaypointActiveMarker.Clear();
             WaypointActiveMarker = null;
+
+            WayPoint wp = new WayPoint();
+            GlobalNavigation.nav1.SelectedMarker = wp;
         }
 
         public static void ActiveWayPointAt(int _index)
@@ -884,6 +902,12 @@ namespace WpfApp1
 
         }
 
+        public static bool IsActiveWayPoint()
+        {
+            if (WaypointActiveMarker == null) return false;
+            return true;
+        }
+
         public static double CalcDistance(PointLatLng _point1, PointLatLng _point2)
         {
             const double R = 6371000; //earth’s radius  radius = 6,371km
@@ -935,8 +959,6 @@ namespace WpfApp1
 
 
         }
-
-
 
         public static void CreateVideo()
         {

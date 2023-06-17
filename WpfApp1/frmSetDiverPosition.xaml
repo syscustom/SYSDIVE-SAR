@@ -38,6 +38,7 @@
         <Label x:Name="lblMarkerPositionLatInfo" Content="经纬度：" HorizontalAlignment="Left" Margin="60,315,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="100" Foreground="White" FontSize="25"/>
         <Label x:Name="lblMarkerPositionLat" Content="" HorizontalAlignment="Left" Margin="165,315,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="371" Foreground="White" FontSize="25"/>
         <Label x:Name="lblMarkerPositionLng" Content="" HorizontalAlignment="Left" Margin="165,372,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="371" Foreground="White" FontSize="25"/>
+        <Label x:Name="lblMarkerPositionName" Content="" HorizontalAlignment="Left" Margin="165,259,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.875,0.192" Width="371" Foreground="White" FontSize="25"/>
 
     </Grid>
 

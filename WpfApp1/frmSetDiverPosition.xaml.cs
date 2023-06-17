@@ -42,8 +42,8 @@ namespace WpfApp1
         private void Cancel_Press()
         {
             DisposeAllComponent();
-            MainWindow mainwindows = new MainWindow();
-            mainwindows.Show();
+            frmNavigation frmnav = new frmNavigation();
+            frmnav.Show();
             this.Close();
         }
 
@@ -166,6 +166,8 @@ namespace WpfApp1
             this.Topmost = Global.TopMost;
             tmrTopMost.Start();
 
+            lblMarkerPositionName.Content = GlobalNavigation.nav1.SelectedMarker.Name;
+
             double decimal_degrees;
             decimal_degrees = GlobalNavigation.nav1.SelectedMarker.PointLATLNG.Lat;
             double minutes;
@@ -209,8 +211,8 @@ namespace WpfApp1
             GlobalDVL.dVLStatus.satellitefix = true;
 
             DisposeAllComponent();
-            MainWindow mainwindows = new MainWindow();
-            mainwindows.Show();
+            frmNavigation frmnav = new frmNavigation();
+            frmnav.Show();
             this.Close();
         }
 

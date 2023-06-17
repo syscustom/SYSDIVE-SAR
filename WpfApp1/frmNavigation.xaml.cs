@@ -357,6 +357,8 @@ namespace WpfApp1
         private void Clear_Press()
         {
             Global.CleartAllCurrentPointsRoute();
+            Global.ClearCurrentToActiveRoute();
+            Global.RemoveActiveWayPoint();
         }
 
         private void Lbl_Clear_MouseUp(object sender, MouseButtonEventArgs e)
@@ -501,15 +503,17 @@ namespace WpfApp1
 
         private void Position_Press()
         {
-            DisposeAllComponent();
-            //frmSetDiverPosition frmsetDiverPosition = new frmSetDiverPosition();
-            //mainwindow.Show();
-            this.Close();
+            if(Global.IsActiveWayPoint())
+            {
+                DisposeAllComponent();
+                frmSetDiverPosition frmSetDiverPosition = new frmSetDiverPosition();
+                frmSetDiverPosition.Show();
+                this.Close();
+            }
 
-
-            GlobalDVL.dVLStatus.Latitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLat", "value"));
-            GlobalDVL.dVLStatus.Longitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLng", "value"));
-            GlobalDVL.dVLStatus.satellitefix = true;
+            //GlobalDVL.dVLStatus.Latitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLat", "value"));
+            //GlobalDVL.dVLStatus.Longitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLng", "value"));
+            //GlobalDVL.dVLStatus.satellitefix = true;
         }
 
         private void Lbl_Position_MouseUp(object sender, MouseButtonEventArgs e)
