@@ -52,5 +52,12 @@
         <WindowsFormsHost x:Name="wfhCompass" HorizontalAlignment="Right" Width="374" Background="#2c2c2c" Grid.Column="3" Margin="0,0,4,0" />
         <Button x:Name="button" Content="Button" Grid.Column="5" HorizontalAlignment="Left" Height="25" Margin="27,35,0,0" VerticalAlignment="Top" Width="45" Click="Button_Click" RenderTransformOrigin="0.556,0.2" Visibility="Hidden"/>
         <Button x:Name="button1" Content="Button" Grid.Column="5" HorizontalAlignment="Left" Height="25" Margin="27,70,0,0" VerticalAlignment="Top" Width="45" Click="Button1_Click" Visibility="Hidden"/>
+        <Label x:Name="lblUTMHeadingDistance" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="26" Width="110" Foreground="White" FontSize="15" Margin="5,2,5,0" HorizontalContentAlignment="Center" Grid.Column="6" Visibility="Hidden"/>
+        <Label x:Name="lblUTMNorthing" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="26" Width="110" Foreground="White" FontSize="15" Margin="5,48,5,0" HorizontalContentAlignment="Center" Grid.Column="6" Visibility="Hidden"/>
+        <Label x:Name="lblUTMEasting" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="26" Width="110" Foreground="White" FontSize="15" Margin="5,27,5,0" HorizontalContentAlignment="Center" Grid.Column="6" Visibility="Hidden"/>
+
+        <Label x:Name="lblVx" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="26" Width="81" Foreground="White" FontSize="15" Margin="0,4,3,0" HorizontalContentAlignment="Center" Grid.Column="7" Visibility="Hidden"/>
+        <Label x:Name="lblVy" Content="00.0°" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.47,0.547" Height="26" Width="81" Foreground="White" FontSize="15" Margin="3,35,0,0" HorizontalContentAlignment="Center" Grid.Column="7" Visibility="Hidden"/>
+
     </Grid>
 </UserControl>

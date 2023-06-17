@@ -19,8 +19,6 @@ namespace WpfApp1
             // Create the application.
             Application app = new Application();
 
-
-
             Global.SavingMainDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\" + "SYSDIVESAR";
             if (System.IO.Directory.Exists(Global.SavingMainDirectory) == false)
                 System.IO.Directory.CreateDirectory(Global.SavingMainDirectory);
@@ -37,6 +35,10 @@ namespace WpfApp1
 
 
             Global.RecordSamplingRate = Convert.ToInt32(SelectXMLData.GetConfiguration("RecordSamplingRate", "value"));
+            if (SelectXMLData.GetConfiguration("LittlePreview", "value") == "0")
+                Global.LittlePreviewSwitch = false;
+            else
+                Global.LittlePreviewSwitch = true;
 
             if (SelectXMLData.GetConfiguration("SonarDemoShow", "value") == "0")
                 Global.SonarDemoShow = false;
@@ -74,12 +76,12 @@ namespace WpfApp1
             if (SelectXMLData.GetConfiguration("GNSSMode", "value") == "0")
             {
                 Global.GNSSMode = Global.GNSSType.Internal;
-                GlobalUpBoard.SetPinState(31, GlobalUpBoard.LOW);
+                GlobalUpBoard.SetPinState(Global.NavPort, GlobalUpBoard.LOW);
             }
             else if (SelectXMLData.GetConfiguration("GNSSMode", "value") == "1")
             {
                 Global.GNSSMode = Global.GNSSType.Float;
-                GlobalUpBoard.SetPinState(31, GlobalUpBoard.HIGH);
+                GlobalUpBoard.SetPinState(Global.NavPort, GlobalUpBoard.HIGH);
             }
 
             if (SelectXMLData.GetConfiguration("MountVision", "value") == "0")
@@ -130,7 +132,7 @@ namespace WpfApp1
             {
                 GlobalSonar.SonarSwitch = false;
                 GlobalOculus.SonarSwitch = false;
-                GlobalUpBoard.SetPinState(18, GlobalUpBoard.LOW);
+                GlobalUpBoard.SetPinState(Global.SonarPort, GlobalUpBoard.LOW);
             }
 
             else if (SelectXMLData.GetConfiguration("SonarSwitch", "value") == "1")
@@ -140,17 +142,17 @@ namespace WpfApp1
                     case Global.SonarType.None: //没有声呐
                         GlobalSonar.SonarSwitch = false;
                         GlobalOculus.SonarSwitch = false;
-                        GlobalUpBoard.SetPinState(18, GlobalUpBoard.LOW);
+                        GlobalUpBoard.SetPinState(Global.SonarPort, GlobalUpBoard.LOW);
                         break;
                     case Global.SonarType.Blueview: //Blueview声呐
                         GlobalSonar.SonarSwitch = true;
                         GlobalOculus.SonarSwitch = false;
-                        GlobalUpBoard.SetPinState(18, GlobalUpBoard.HIGH);
+                        GlobalUpBoard.SetPinState(Global.SonarPort, GlobalUpBoard.HIGH);
                         break;
                     case Global.SonarType.Oculus: //Oculus声呐
                         GlobalSonar.SonarSwitch = false;
                         GlobalOculus.SonarSwitch = true;
-                        GlobalUpBoard.SetPinState(18, GlobalUpBoard.HIGH);
+                        GlobalUpBoard.SetPinState(Global.SonarPort, GlobalUpBoard.HIGH);
                         break;
                 }
             }
@@ -193,6 +195,12 @@ namespace WpfApp1
             {
                 GlobalDVL.isInstalled = true;
                 GlobalDVL.CreateDVL();
+                if (SelectXMLData.GetConfiguration("DVLNavigationMode", "value") == "1")
+                {
+                    GlobalUpBoard.SetPinState(Global.DVLPort, GlobalUpBoard.HIGH);
+                    GlobalDVL.DVLNavigationMode = true;
+                }
+                    
             }
 
 
@@ -214,9 +222,17 @@ namespace WpfApp1
 
             Global.EndCallService();
             if (Global.shutdowntype == Global.ShutDownType.Exit)
+            {
+                //GlobalDVL.CloseDVL();
                 Environment.Exit(0);
+            }
+                
             if(Global.shutdowntype == Global.ShutDownType.Shutdown)
+            {
+                //GlobalDVL.CloseDVL();
                 ShutDownSys.DoExitWin(ShutDownSys.EWX_FORCE | ShutDownSys.EWX_POWEROFF);
+            }
+
         }
     }
 

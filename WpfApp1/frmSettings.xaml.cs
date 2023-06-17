@@ -182,12 +182,12 @@ namespace WpfApp1
                         frmDisplaySettings.Show();
                         this.Close();
                         break;
-                    //case 3:
-                        //DisposeAllComponent();
-                        //frmGNSSInformation frmGNSSInformation = new frmGNSSInformation();
-                        //frmGNSSInformation.Show();
-                        //this.Close();
-                        //break;
+                    case 3:
+                        DisposeAllComponent();
+                        frmGNSSInformation frmGNSSInformation = new frmGNSSInformation();
+                        frmGNSSInformation.Show();
+                        this.Close();
+                        break;
                 }
             }
         }

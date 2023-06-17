@@ -200,10 +200,10 @@ namespace WpfApp1
 
             GlobalExternal.CloseExternal();
 
-            GlobalDVL.CloseDVL();
+            
             */
 
-            
+            GlobalDVL.CloseDVL();
 
             if (Global.MountVision)
             {

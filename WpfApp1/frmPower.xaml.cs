@@ -70,18 +70,25 @@ namespace WpfApp1
             if(GlobalDVL.isInstalled)
             {
                 brdDVL.Visibility = Visibility.Hidden;
+                brdDVL.Background = Brushes.Transparent;
                 lbl_DVL.Visibility = Visibility.Visible;
                 grdDVLNav.Visibility = Visibility.Visible;
             }
             else
             {
                 brdDVL.Visibility = Visibility.Visible;
+                brdDVL.Background = Brushes.Black;
                 lbl_DVL.Visibility = Visibility.Hidden;
                 grdDVLNav.Visibility = Visibility.Hidden;
             }
 
             if (GlobalDVL.isInstalled)
             {
+                if (SelectXMLData.GetConfiguration("DVLNavigationMode", "value") == "1")
+                    GlobalDVL.DVLNavigationMode = true;
+                else
+                    GlobalDVL.DVLNavigationMode = false;
+
                 if (GlobalDVL.DVLNavigationMode)
                 {
                     lblDVLNavSwitch.Content = "开启";
@@ -238,7 +245,7 @@ namespace WpfApp1
                 {
                     if (GlobalOculus.SonarSwitch == true)
                     {
-                        GlobalUpBoard.SetPinState(18, GlobalUpBoard.HIGH);
+                        GlobalUpBoard.SetPinState(Global.SonarPort, GlobalUpBoard.HIGH);
                         SelectXMLData.SaveConfiguration("SonarSwitch", "value", "1");
                         lblSonarSwitch.Content = "开启";
                         Sonar_Img.Source = new BitmapImage(new Uri("pack://siteoforigin:,,,/Resources/Sonar_Icon.png"));
@@ -250,7 +257,7 @@ namespace WpfApp1
                         SelectXMLData.SaveConfiguration("SonarSwitch", "value", "0");
                         lblSonarSwitch.Content = "关闭";
                         Sonar_Img.Source = new BitmapImage(new Uri("pack://siteoforigin:,,,/Resources/Sonar_Icon_RED.png"));
-                        GlobalUpBoard.SetPinState(18, GlobalUpBoard.LOW);
+                        GlobalUpBoard.SetPinState(Global.SonarPort, GlobalUpBoard.LOW);
                     }
                 }
             }
@@ -426,15 +433,19 @@ namespace WpfApp1
             if (GlobalDVL.isInstalled)
             {
                 GlobalDVL.DVLNavigationMode = !GlobalDVL.DVLNavigationMode;
-                if(GlobalDVL.DVLNavigationMode)
+
+                if (GlobalDVL.DVLNavigationMode)
                 {
                     lblDVLNavSwitch.Content = "开启";
-                    GlobalDVL.dvl1.satellitefix = false;
+                    GlobalDVL.dVLStatus.satellitefix = false;
+                    GlobalUpBoard.SetPinState(Global.DVLPort, GlobalUpBoard.HIGH);
+                    SelectXMLData.SaveConfiguration("DVLNavigationMode", "value", "1");
                 }
                 else
                 {
                     lblDVLNavSwitch.Content = "关闭";
-
+                    GlobalUpBoard.SetPinState(Global.DVLPort, GlobalUpBoard.LOW);
+                    SelectXMLData.SaveConfiguration("DVLNavigationMode", "value", "0");
                 }
             }
         }

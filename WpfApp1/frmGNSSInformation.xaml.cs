@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,6 +24,7 @@ namespace WpfApp1
         DispatcherTimer tmrButtonCheck = new DispatcherTimer();
         DispatcherTimer tmrFormMonitor = new DispatcherTimer();
         DispatcherTimer tmrTopMost = new DispatcherTimer();
+        Thread threadGNSSMessage;
 
         public frmGNSSInformation()
         {
@@ -37,7 +39,39 @@ namespace WpfApp1
 
             tmrTopMost.Tick += new EventHandler(tmrTopMost_Tick);
             tmrTopMost.Interval = TimeSpan.FromSeconds(2);
+
+            threadGNSSMessage = new Thread(new ThreadStart(StartCollectingMessage));
+            threadGNSSMessage.Start();
         }
+
+        private void StartCollectingMessage()
+        {
+            while (true)
+            {
+                Thread.Sleep(50);
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)delegate
+                {
+                    if (GlobalNavigation.CurrentGNSSMessage[1] == "1")
+                    {
+                        if (txtGNSSMessage.LineCount > 50)
+                        {
+                            txtGNSSMessage.Clear();
+                        }
+                        txtGNSSMessage.AppendText(GlobalNavigation.CurrentGNSSMessage[0] + "\r\n");
+                        txtGNSSMessage.ScrollToEnd();
+                        GlobalNavigation.CurrentGNSSMessage[1] = "0";
+
+                        //txtGNSSMessage.Text += GlobalNavigation.CurrentGNSSMessage[0] + "\r\n";
+                        //GlobalNavigation.CurrentGNSSMessage[1] = "0";
+                    }          
+                });
+
+                //this.Dispatcher.Invoke((EventHandler)delegate {
+                //    txtGNSSMessage.Text = "真的只要一行代码"; });
+            }
+        }
+
+
 
         private void ImgDownArrow_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -57,6 +91,7 @@ namespace WpfApp1
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (threadGNSSMessage != null) threadGNSSMessage.Abort();
             tmrFormMonitor.Stop();
             tmrButtonCheck.Stop();
             tmrTopMost.Stop();
@@ -83,7 +118,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[1] == 0 && GlobalUpBoard.ButtonState[1] == false) //Pressed ImgUpArrow Button
                 {
-
+                    Back_Press();
                     GlobalUpBoard.ButtonState[1] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[1] == 1 && GlobalUpBoard.ButtonState[1] == true)
@@ -117,7 +152,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[5] == 0 && GlobalUpBoard.ButtonState[5] == false) //Pressed Home Button
                 {
-
+                    Home_Press();
                     GlobalUpBoard.ButtonState[5] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[5] == 1 && GlobalUpBoard.ButtonState[5] == true)
@@ -198,6 +233,19 @@ namespace WpfApp1
         private void Lbl_Home_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Home_Press();
+        }
+
+        private void Back_Press()
+        {
+            DisposeAllComponent();
+            frmSettings frmSettings = new frmSettings();
+            frmSettings.Show();
+            this.Close();
+        }
+
+        private void Lbl_Back_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Back_Press();
         }
     }
 }

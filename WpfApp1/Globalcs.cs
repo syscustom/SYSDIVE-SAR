@@ -26,6 +26,10 @@ using System.ServiceProcess;
 using AppContainers;
 using System.Collections;
 using Xsens_Device_API;
+using System.Net.Sockets;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 internal enum EAPIStatus_t : uint
 {
@@ -71,9 +75,15 @@ namespace WpfApp1
             Diver = 1
         }
 
+        public static int NavPort = 31;
+        public static int SonarPort = 18;
+        public static int DVLPort = 33;
+
         public static bool TopMost = true;
 
         public static List<WayPoint> LstWayPoints = new List<WayPoint>();
+        public static List<WayPoint> LstCurrentPoints = new List<WayPoint>();
+
         public static string MissionFileFullName = "";
         public static string MissionFileNameWithoutExtension = "";
         public static bool IsStartRecordLog = false;
@@ -102,12 +112,15 @@ namespace WpfApp1
 
         private static GMapMarker WaypointActiveMarker = null;
 
+        private static WayPoint PreviousCurrentWayPoint = new WayPoint();
+
         private static int intWaypointActiveIndex = 0;
 
         public static ShutDownType shutdowntype = ShutDownType.Exit;
         public static MapNorth mapnorth = MapNorth.North;
 
         public static bool SonarDemoShow = false;
+        public static bool LittlePreviewSwitch = false;
 
         private static double dblDefaultLat = 0.0;
         private static double dblDefaultLng = 0.0;
@@ -122,10 +135,10 @@ namespace WpfApp1
 
         public static void CreatMap()
         {
-            globalMap.Manager.Mode = AccessMode.ServerAndCache;
-            globalMap.MaxZoom = 18;
+            globalMap.Manager.Mode = AccessMode.CacheOnly;
+            globalMap.MaxZoom = 19;
             globalMap.MinZoom = 3;
-            globalMap.Zoom = 13;
+            globalMap.Zoom = 16;
             watcher = new GeoCoordinateWatcher();
             watcher.PositionChanged += watcher_PositionChanged;
             watcher.StatusChanged += watcher_StatusChanged;
@@ -265,29 +278,49 @@ namespace WpfApp1
             return (180 / Math.PI) * radian;
         }
 
+        private static Point convertToXY(double distance, double bearing, Point origin)
+        {
+            double bearingRad = bearing * Math.PI / 180.0;  // Convert bearing to radians
+
+            double delta_x = distance * Math.Sin(bearingRad);
+            double delta_y = distance * Math.Cos(bearingRad);
+
+            Point result = new Point();
+            result.X = origin.X + delta_x;
+            result.Y = origin.Y + delta_y;
+
+            return result;
+        }
+
+
         private static void tmrCurrentPosition_Tick(object sender, EventArgs e)
         {
+            double routelat = 0.0;
+            double routelng = 0.0;
+
             if (GlobalDVL.DVLNavigationMode == false) //GlobalNavigation.nav1.GPSValid && 
             {
                 currentMarker.Position = new PointLatLng(GlobalNavigation.nav1.Latitude, GlobalNavigation.nav1.Longitude);
                 globalMap.Position = currentMarker.PositionGCJ02;
+                routelat = GlobalNavigation.nav1.Latitude;
+                routelng = GlobalNavigation.nav1.Longitude;
             }
 
             if (GlobalDVL.isInstalled && GlobalDVL.DVLNavigationMode)
             {
-
                 double lat1 = 0.0;
                 double lng1 = 0.0;
-                if (GlobalDVL.dvl1.satellitefix == false)
+                if (GlobalDVL.dVLStatus.satellitefix == false)
                 {
                     if (GlobalNavigation.nav1.GPSValid)
                     {
                         lat1 = GlobalNavigation.nav1.Latitude;
                         lng1 = GlobalNavigation.nav1.Longitude;
-                        GlobalDVL.dvl1.Latitude = lat1;
-                        GlobalDVL.dvl1.Longitude = lng1;
-                        GlobalDVL.dvl1.satellitefix = true;
-                        return;
+                        GlobalDVL.dVLStatus.Latitude = lat1;
+                        GlobalDVL.dVLStatus.Longitude = lng1;
+                        GlobalDVL.dVLStatus.satellitefix = true;
+                        routelat = GlobalDVL.dVLStatus.Latitude;
+                        routelng = GlobalDVL.dVLStatus.Longitude;
                     }
                 }
                 else
@@ -296,50 +329,106 @@ namespace WpfApp1
                     {
                         lat1 = GlobalNavigation.nav1.Latitude;
                         lng1 = GlobalNavigation.nav1.Longitude;
-                        GlobalDVL.dvl1.Latitude = lat1;
-                        GlobalDVL.dvl1.Longitude = lng1;
+                        GlobalDVL.dVLStatus.Latitude = lat1;
+                        GlobalDVL.dVLStatus.Longitude = lng1;
                     }
+
+                    routelat = GlobalDVL.dVLStatus.Latitude;
+                    routelng = GlobalDVL.dVLStatus.Longitude;
+                    //DVL 导航推算部分
+                    //if (dVLStatus.satellitefix == true)
+                    //{
+
+                    //}
+                    /*
+                    bool dvlvalid = false;
+                    if (GlobalDVL.dVLStatus.dvltype == DVLType.Serial)
+                        dvlvalid = GlobalDVL.dvl1.valid;
                     else
+                        dvlvalid = GlobalDVL.dVL.velocity_valid;
+
+                    if (dvlvalid)
                     {
-                        if (GlobalDVL.dvl1.valid)
+                        lat1 = GlobalDVL.dVLStatus.Latitude;
+                        lng1 = GlobalDVL.dVLStatus.Longitude;
+
+                        double vx2 = 0.0;
+                        double vy2 = 0.0;
+
+                        if (GlobalDVL.dVLStatus.dvltype == DVLType.Serial)
                         {
-                            lat1 = GlobalDVL.dvl1.Latitude;
-                            lng1 = GlobalDVL.dvl1.Longitude;
-
-                            double vx2 = GlobalDVL.dvl1.vx * GlobalDVL.dvl1.vx;
-                            double vy2 = GlobalDVL.dvl1.vy * GlobalDVL.dvl1.vy;
-
-                            double hesudu = Math.Sqrt(vx2 + vy2);
-
-                            double d = hesudu * GlobalDVL.dvl1.time * 0.001;
-
-
-                            const double R = 6371000;
-                            double θ = GlobalNavigation.nav1.GetHeading();
-
-                            double δ = d / R;
-                            θ = ConvertToRadians(θ);
-                            lat1 = ConvertToRadians(lat1);
-                            lng1 = ConvertToRadians(lng1);
-
-
-                            double sinφ2 = Math.Sin(lat1) * Math.Cos(δ) + Math.Cos(lat1) * Math.Sin(δ) * Math.Cos(θ);
-                            double φ2 = Math.Asin(sinφ2);
-                            double y = Math.Sin(θ) * Math.Sin(δ) * Math.Cos(lat1);
-                            double x = Math.Cos(δ) - Math.Sin(lat1) * sinφ2;
-                            double λ2 = lng1 + Math.Atan2(y, x);
-
-                            double lat2 = ConvertToDegrees(φ2);
-                            double lon2 = ConvertToDegrees(λ2);
-
-                            GlobalDVL.dvl1.Latitude = lat2;
-                            GlobalDVL.dvl1.Longitude = lon2;
+                            vx2 = GlobalDVL.dvl1.vx * GlobalDVL.dvl1.vx;
+                            vy2 = GlobalDVL.dvl1.vy * GlobalDVL.dvl1.vy;
                         }
+                        else
+                        {
+                            vx2 = GlobalDVL.dVL.vx * GlobalDVL.dVL.vx;
+                            vy2 = GlobalDVL.dVL.vy * GlobalDVL.dVL.vy;
+                        }
+
+                        double hesudu = Math.Sqrt(vx2 + vy2);
+
+                        double d = 0.0;
+                        if (GlobalDVL.dVLStatus.dvltype == DVLType.Serial)
+                        {
+                            d = hesudu * GlobalDVL.dvl1.time * 0.001;
+                        }
+                        else
+                        {
+                            d = hesudu * GlobalDVL.dVL.time * 0.001;
+                        }
+
+                        const double R = 6371000;
+                        double θ = GlobalNavigation.nav1.GetHeading();
+
+                        double δ = d / R;
+                        θ = ConvertToRadians(θ);
+                        lat1 = ConvertToRadians(lat1);
+                        lng1 = ConvertToRadians(lng1);
+
+
+                        double sinφ2 = Math.Sin(lat1) * Math.Cos(δ) + Math.Cos(lat1) * Math.Sin(δ) * Math.Cos(θ);
+                        double φ2 = Math.Asin(sinφ2);
+                        double y = Math.Sin(θ) * Math.Sin(δ) * Math.Cos(lat1);
+                        double x = Math.Cos(δ) - Math.Sin(lat1) * sinφ2;
+                        double λ2 = lng1 + Math.Atan2(y, x);
+
+                        double lat2 = ConvertToDegrees(φ2);
+                        double lon2 = ConvertToDegrees(λ2);
+
+                        GlobalDVL.dVLStatus.Latitude = lat2;
+                        GlobalDVL.dVLStatus.Longitude = lon2;
                     }
-                    currentMarker.Position = new PointLatLng(GlobalDVL.dvl1.Latitude, GlobalDVL.dvl1.Longitude);
-                    globalMap.Position = currentMarker.PositionGCJ02;
+                    */
                 }
+                currentMarker.Position = new PointLatLng(GlobalDVL.dVLStatus.Latitude, GlobalDVL.dVLStatus.Longitude);
+                globalMap.Position = currentMarker.PositionGCJ02;
             }
+
+            if (routelat != 0 && routelng != 0)
+                if (routelat != dblDefaultLat && routelng != dblDefaultLng)
+                {
+                    WayPoint _waypoint = new WayPoint();
+                    PointLatLng _pointlatlng = new PointLatLng();
+                    double _lat = Math.Round(routelat, 6);
+                    double _lng = Math.Round(routelng, 6);
+
+                    if (PreviousCurrentWayPoint.PointLATLNG.Lat != _lat && PreviousCurrentWayPoint.PointLATLNG.Lng != _lng)
+                    {
+                        PointLatLng _previouspointlatlng = new PointLatLng();
+                        _previouspointlatlng.Lat = _lat;
+                        _previouspointlatlng.Lng = _lng;
+                        PreviousCurrentWayPoint.PointLATLNG = _previouspointlatlng;
+
+                        _pointlatlng.Lat = routelat;
+                        _pointlatlng.Lng = routelng;
+
+                        _waypoint.PointLATLNG = _pointlatlng;
+                        LstCurrentPoints.Add(_waypoint);
+
+                        PaintAllCurrentPointsRoute();
+                    }
+                }
 
             if (blnLocationConfirmed)
             {
@@ -350,19 +439,36 @@ namespace WpfApp1
                         GlobalNavigation.nav1.Distance = CalcDistance(currentMarker.Position, GlobalNavigation.nav1.SelectedMarker.PointLATLNG);
                         GlobalNavigation.nav1.Bearing = CalcBearing(currentMarker.Position, GlobalNavigation.nav1.SelectedMarker.PointLATLNG);
                         PrintCurrentToActiveRoute(currentMarker.Position, GlobalNavigation.nav1.SelectedMarker.PointLATLNG);
+
+
+                        double clockangel = 0.0;
+                        clockangel = GlobalNavigation.nav1.Bearing - GlobalNavigation.nav1.GetHeading();
+                        if (clockangel < 0) clockangel = 360 + clockangel;
+
+                        double anticlockangel = 0.0;
+                        anticlockangel = GlobalNavigation.nav1.GetHeading() - GlobalNavigation.nav1.Bearing;
+                        if (anticlockangel < 0) anticlockangel = 360 + anticlockangel;
+
+                        GlobalNavigation.nav1.ClockAngel = clockangel;
+                        GlobalNavigation.nav1.AntiClockAngel = anticlockangel;
+
                     }
                     else
                     {
-                        GlobalNavigation.nav1.Distance = 0;
-                        GlobalNavigation.nav1.Bearing = 0;
+                        GlobalNavigation.nav1.Distance = -1;
+                        GlobalNavigation.nav1.Bearing = -1;
+                        GlobalNavigation.nav1.ClockAngel = -1;
+                        GlobalNavigation.nav1.AntiClockAngel = -1;
                     }
                 }
                 else
                 {
                     if (WaypointActiveMarker == null)
                     {
-                        GlobalNavigation.nav1.Distance = 0;
-                        GlobalNavigation.nav1.Bearing = 0;
+                        GlobalNavigation.nav1.Distance = -1;
+                        GlobalNavigation.nav1.Bearing = -1;
+                        GlobalNavigation.nav1.ClockAngel = -1;
+                        GlobalNavigation.nav1.AntiClockAngel = -1;
                     }
                 }
             }
@@ -482,8 +588,72 @@ namespace WpfApp1
                 gmRoute.RegenerateShape(globalMap);
                 ((System.Windows.Shapes.Path)gmRoute.Shape).Stroke = new SolidColorBrush(Colors.Blue);
                 ((System.Windows.Shapes.Path)gmRoute.Shape).StrokeThickness = 2;
+                gmRoute.Tag = "waypoint";
                 globalMap.Markers.Add(gmRoute);
             }
+        }
+
+        private static void PaintAllCurrentPointsRoute()
+        {
+            bool _routeexist = false;
+            for (int i = 0; i < globalMap.Markers.Count; i++)
+            {
+                if (globalMap.Markers[i].GetType() == typeof(GMapRoute))
+                {
+                    GMapRoute gmRoute = (GMapRoute)globalMap.Markers[i];
+                    if (gmRoute.Tag.ToString() == "current")
+                    {
+                        _routeexist = true;
+                        gmRoute.Points.Add(LstCurrentPoints[LstCurrentPoints.Count - 1].PointLATLNG);
+                        if(gmRoute.Points.Count ==2)
+                        {                        gmRoute.RegenerateShape(globalMap);
+                        ((System.Windows.Shapes.Path)gmRoute.Shape).Stroke = new SolidColorBrush(Colors.Red);
+                        ((System.Windows.Shapes.Path)gmRoute.Shape).StrokeThickness = 2; }
+
+                        break;
+                    }
+                }
+            }
+            if (_routeexist == false && LstCurrentPoints.Count > 1) //如果没有current Route 需要建立一个
+            {
+                GMapRoute gmRoute = new GMapRoute(new List<PointLatLng>() { LstCurrentPoints[0].PointLATLNG, LstCurrentPoints[1].PointLATLNG })
+                {
+                    Shape = new Line()
+                    {
+                        StrokeThickness = 2,
+                        //Stroke = System.Windows.Media.Brushes.BlueViolet
+                        Stroke = System.Windows.Media.Brushes.White,
+                    }
+                };
+                gmRoute.RegenerateShape(globalMap);
+                ((System.Windows.Shapes.Path)gmRoute.Shape).Stroke = new SolidColorBrush(Colors.Red);
+                ((System.Windows.Shapes.Path)gmRoute.Shape).StrokeThickness = 2;
+                gmRoute.Tag = "current";
+                globalMap.Markers.Add(gmRoute);
+            }
+
+            //RemoveAllRoute();
+
+            /*
+            for (int i = 0; i < LstCurrentPoints.Count - 1; i++)
+            {
+                GMapRoute gmRoute = new GMapRoute(new List<PointLatLng>() { LstCurrentPoints[i].PointLATLNG, (LstCurrentPoints.Count - 1) == i ? LstCurrentPoints[i].PointLATLNG : LstCurrentPoints[i + 1].PointLATLNG })
+                {
+                    Shape = new Line()
+                    {
+                        StrokeThickness = 2,
+                        //Stroke = System.Windows.Media.Brushes.BlueViolet
+                        Stroke = System.Windows.Media.Brushes.White,
+                    }
+                };
+                gmRoute.RegenerateShape(globalMap);
+                ((System.Windows.Shapes.Path)gmRoute.Shape).Stroke = new SolidColorBrush(Colors.Red);
+                ((System.Windows.Shapes.Path)gmRoute.Shape).StrokeThickness = 2;
+                gmRoute.Tag = "current";
+                globalMap.Markers.Add(gmRoute);
+            
+            }
+            */
         }
 
         private static void PrintCurrentToActiveRoute(PointLatLng _point1, PointLatLng _point2)
@@ -511,6 +681,23 @@ namespace WpfApp1
             ((System.Windows.Shapes.Path)CTARoute.Shape).Stroke = new SolidColorBrush(Colors.Black);
             ((System.Windows.Shapes.Path)CTARoute.Shape).StrokeThickness = 5;
             globalMap.Markers.Add(CTARoute);
+
+        }
+
+        public static void CleartAllCurrentPointsRoute()
+        {
+            for (int i = 0; i < globalMap.Markers.Count; i++)
+            {
+                if (globalMap.Markers[i].GetType() == typeof(GMapRoute))
+                {
+                    GMapRoute gmRoute = (GMapRoute)globalMap.Markers[i];
+                    if (gmRoute.Tag.ToString() == "current")
+                    {
+                        gmRoute.Clear();
+                        break;
+                    }
+                }
+            }
 
         }
 
@@ -1201,10 +1388,13 @@ namespace WpfApp1
             SetPinDirection(28, INPUT);
             SetPinDirection(32, INPUT);
 
-            SetPinDirection(31, OUTPUT);
-            SetPinDirection(18, OUTPUT);
-            SetPinState(31, LOW);
-            SetPinState(18, LOW);
+            SetPinDirection(Global.NavPort, OUTPUT);
+            SetPinDirection(Global.SonarPort, OUTPUT);
+            SetPinDirection(Global.DVLPort, OUTPUT);
+
+            SetPinState(Global.NavPort, LOW);
+            SetPinState(Global.SonarPort, LOW);
+            SetPinState(Global.DVLPort, LOW);
             //byte pbuffer;
 
             //EApiI2CWriteTransfer(EAPI_ID_I2C_EXTERNAL, EAPI_I2C_ENC_7BIT_ADDR(238), 0x1E, out pbuffer, 1);
@@ -1217,7 +1407,10 @@ namespace WpfApp1
 
         public static void CloseUpBoard()
         {
-            SetPinState(18, LOW);
+            SetPinState(Global.NavPort, LOW);
+            SetPinState(Global.SonarPort, LOW);
+            SetPinState(Global.DVLPort, LOW);
+
             if (threadGPIOCollecting != null) threadGPIOCollecting.Abort();
             if (GPIOSwitch)
             {
@@ -1368,26 +1561,410 @@ namespace WpfApp1
 
         private static SerialSendData serialport1;
 
+        public static DVLWRZ dVL = new DVLWRZ();
+        public static DVLWRP dVLWRP = new DVLWRP();
+        public static DVLStatus dVLStatus = new DVLStatus();
+
+        private static TcpClient socket;
+        private static NetworkStream networkStream;
+        private static string lineBuffer;
+        private static byte[] buffer;
+        private static DispatcherTimer tmrConnectionCheck = new DispatcherTimer();
+        private static Thread threadDVLConnection;
+        private static Thread threadCalcDeadReckoning;
+
+        private static ArrayList dvlMessages = new ArrayList();
+
+        private static void StartCalcDeadReckoning()
+        {
+            int timecounter = 0;
+            while (true)
+            {
+                Thread.Sleep(50);
+                if (isInstalled && DVLNavigationMode)
+                {
+                    if (dVLStatus.satellitefix == true)
+                    {
+                        while (dvlMessages.Count > 0)
+                        {
+                            //if (dvlMessages.Count == 1) timecounter++;
+                            RecordDVL dvlMessage = (RecordDVL)dvlMessages[0];
+
+                            double xdistance = dvlMessage.vx * dvlMessage.time * 0.001; //
+                            double ydistance = dvlMessage.vy * dvlMessage.time * 0.001; //
+                            double hedistance = Math.Sqrt(xdistance * xdistance + ydistance * ydistance);
+                            double headingdistance = 0.0;
+
+                            double cosA = (hedistance * hedistance + xdistance * xdistance - ydistance * ydistance) / (2 * xdistance * hedistance);
+                            double radiansA = Math.Acos(cosA);
+                            double angleA = ConvertToDegrees(radiansA);
+
+                            if (dvlMessage.vx > 0)
+                            {
+                                if (dvlMessage.vy > 0)
+                                    headingdistance = dvlMessage.heading + angleA;
+                                else
+                                    headingdistance = dvlMessage.heading - angleA;
+                            }
+
+                            if (dvlMessage.vx < 0)
+                            {
+                                if (dvlMessage.vy > 0)
+                                    headingdistance = dvlMessage.heading + angleA;
+
+                                else
+                                    headingdistance = dvlMessage.heading - angleA;
+                            }
+
+                            if (headingdistance >= 360) headingdistance -= 360;
+                            if (headingdistance < 0) headingdistance += 360;
+
+                            Point origin = new Point(0.0, 0.0);
+                            Point convertedPoint = convertToXY(hedistance, headingdistance, origin);
+
+                            Utm.LLtoUTM(GlobalDVL.dVLStatus.Latitude, GlobalDVL.dVLStatus.Longitude);
+
+                            double newUTMEasting = Utm.UTMEasting + convertedPoint.X;
+                            double newUTMNorthing = Utm.UTMNorthing + convertedPoint.Y;
+
+                            Utm.UTMtoLL(newUTMNorthing, newUTMEasting, Utm.UTMZone);
+                            GlobalDVL.dVLStatus.Latitude = Utm.Lat;
+                            GlobalDVL.dVLStatus.Longitude = Utm.Long;
+
+                            GlobalNavigation.nav1.Latitude = Utm.Lat;
+                            GlobalNavigation.nav1.Longitude = Utm.Long;
+
+                            GlobalDVL.dVLStatus.UTMEasting = newUTMEasting;
+                            GlobalDVL.dVLStatus.UTMNorthing = newUTMNorthing;
+                            GlobalDVL.dVLStatus.UTMZone = Utm.UTMZone;
+                            GlobalDVL.dVLStatus.HeadingDistance = headingdistance;
+
+                            //if (dvlMessages.Count == 1)
+                            //{
+                            //    if (timecounter > 5)
+                            //    {
+                            //        timecounter = 0;
+                            //        dvlMessages.RemoveAt(0);
+                            //    }
+                            //    break;
+                            //}
+                            dvlMessages.RemoveAt(0);
+                        }
+
+
+
+
+                        /*
+                        if (GlobalDVL.dvl1.valid)
+                        {
+                            double xdistance = GlobalDVL.dvl1.vx * GlobalDVL.dvl1.time * 0.001; //
+                            double ydistance = GlobalDVL.dvl1.vy * GlobalDVL.dvl1.time * 0.001; //
+                            double hedistance = Math.Sqrt(xdistance * xdistance + ydistance * ydistance);
+                            double headingdistance = 0.0;
+
+                            double cosA = (hedistance * hedistance + xdistance * xdistance - ydistance * ydistance) / (2 * xdistance * hedistance);
+                            double radiansA = Math.Acos(cosA);
+                            double angleA = ConvertToDegrees(radiansA);
+
+                            if (GlobalDVL.dvl1.vx > 0)
+                            {
+                                if (GlobalDVL.dvl1.vy > 0)
+                                    headingdistance = GlobalNavigation.nav1.GetHeading() + angleA;
+                                else
+                                    headingdistance = GlobalNavigation.nav1.GetHeading() - angleA;
+                            }
+
+                            if (GlobalDVL.dvl1.vx < 0)
+                            {
+                                if (GlobalDVL.dvl1.vy > 0)
+                                    headingdistance = GlobalNavigation.nav1.GetHeading() + angleA;
+
+                                else
+                                    headingdistance = GlobalNavigation.nav1.GetHeading() - angleA;
+                            }
+
+                            if (headingdistance >= 360) headingdistance -= 360;
+                            if (headingdistance < 0) headingdistance += 360;
+
+                            Point origin = new Point(0.0, 0.0);
+                            Point convertedPoint = convertToXY(hedistance, headingdistance, origin);
+
+                            Utm.LLtoUTM(GlobalDVL.dVLStatus.Latitude, GlobalDVL.dVLStatus.Longitude);
+
+                            double newUTMEasting = Utm.UTMEasting + convertedPoint.X;
+                            double newUTMNorthing = Utm.UTMNorthing + convertedPoint.Y;
+
+                            Utm.UTMtoLL(newUTMNorthing, newUTMEasting, Utm.UTMZone);
+                            GlobalDVL.dVLStatus.Latitude = Utm.Lat;
+                            GlobalDVL.dVLStatus.Longitude = Utm.Long;
+                            GlobalDVL.dVLStatus.UTMEasting = newUTMEasting;
+                            GlobalDVL.dVLStatus.UTMNorthing = newUTMNorthing;
+                            GlobalDVL.dVLStatus.UTMZone = Utm.UTMZone;
+                            GlobalDVL.dVLStatus.HeadingDistance = headingdistance;
+
+                            GlobalDVL.dvl1.IsCalcDeadReckoned = true;
+                            */
+
+
+                        /*
+                        double lat1 = 0.0;
+                        double lng1 = 0.0;
+
+                        lat1 = GlobalDVL.dVLStatus.Latitude;
+                        lng1 = GlobalDVL.dVLStatus.Longitude;
+
+                        //double vx2 = 0.0;
+                        //double vy2 = 0.0;
+                        //vx2 = dvl1.vx * dvl1.vx;
+                        //vy2 = dvl1.vy * dvl1.vy;
+
+                        //double hesudu = Math.Sqrt(vx2 + vy2);
+                        //double dx = dvl1.vx * dvl1.time * 0.001;
+                        //double dy = dvl1.vy * dvl1.time * 0.001;
+
+                        double d = 0.0;
+                        //d = Math.Sqrt(dx * dx + dy * dy);
+                        //d = hesudu * dvl1.time * 0.001;
+                        d = hedistance;
+                        const double R = 6371000;
+                        double θ = headingdistance; //GlobalNavigation.nav1.GetHeading();
+
+                        double δ = d / R;
+                        θ = ConvertToRadians(θ);
+                        lat1 = ConvertToRadians(lat1);
+                        lng1 = ConvertToRadians(lng1);
+
+
+                        double sinφ2 = Math.Sin(lat1) * Math.Cos(δ) + Math.Cos(lat1) * Math.Sin(δ) * Math.Cos(θ);
+                        double φ2 = Math.Asin(sinφ2);
+                        double y = Math.Sin(θ) * Math.Sin(δ) * Math.Cos(lat1);
+                        double x = Math.Cos(δ) - Math.Sin(lat1) * sinφ2;
+                        double λ2 = lng1 + Math.Atan2(y, x);
+
+                        double lat2 = ConvertToDegrees(φ2);
+                        double lon2 = ConvertToDegrees(λ2);
+
+                        dVLStatus.Latitude = lat2;
+                        dVLStatus.Longitude = lon2;
+                        */
+                        // }
+                    }
+                }
+            }
+        }
+
+        private static void StartDVLConnection()
+        {
+            while (true)
+            {
+                Thread.Sleep(2000);
+                if (dVLStatus.connection == false)
+                {
+                    socket = new TcpClient();
+                    try
+                    {
+                        socket.Connect("192.168.194.95", 16171);
+                        networkStream = socket.GetStream();
+                        buffer = new byte[2048];
+                        resetCallback();
+                        dVLStatus.connection = true;
+
+                    }
+                    catch (SocketException ex)
+                    {
+                        socket.Dispose();
+                        socket = null;
+                        dVL.velocity_valid = false;
+                        dVLStatus.connection = false;
+                    }
+                }
+            }
+        }
+
         public static void CreateDVL()
         {
-            serialport1 = new SerialSendData();
+
+            if (SelectXMLData.GetConfiguration("DVLTYPE", "value") == "Serial")
+            {
+                dVLStatus.dvltype = DVLType.Serial;
+            }
+
+            if (SelectXMLData.GetConfiguration("DVLTYPE", "value") == "Network")
+            {
+                dVLStatus.dvltype = DVLType.Network;
+            }
+
+            if (dVLStatus.dvltype == DVLType.Serial)
+            {
+                serialport1 = new SerialSendData();
+                try
+                {
+                    serialport1.OnDataReceived += new SerialSendData.UserRequest(DVLDataReceived);
+                    serialport1.OpenPort(SelectXMLData.GetConfiguration("DVLPORT", "value"), 115200, SerialSendData.SerialType.DVLPORT);
+
+                    dvl1 = new DVL('1', ref serialport1);
+
+                    threadCalcDeadReckoning = new Thread(new ThreadStart(StartCalcDeadReckoning));
+                    threadCalcDeadReckoning.Start();
+                }
+                catch
+                {
+
+                }
+            }
+
+            if (dVLStatus.dvltype == DVLType.Network)
+            {
+                threadDVLConnection = new Thread(new ThreadStart(StartDVLConnection));
+                threadDVLConnection.Start();
+                //tmrConnectionCheck.Tick += new EventHandler(tmrConnectionCheck_Tick);
+                //tmrConnectionCheck.Interval = TimeSpan.FromSeconds(2);
+                /*
+                socket = new TcpClient();
+                try
+                {
+                    socket.Connect("192.168.194.95", 16171);
+                    networkStream = socket.GetStream();
+                    buffer = new byte[2048];
+                    resetCallback();
+                    dVL.connection = true;
+                    //connectionstatus = true;
+
+                }
+                catch (SocketException ex)
+                {
+                    socket.Dispose();
+                    socket = null;
+                    dVL.velocity_valid = false;
+                    dVL.connection = false;
+                    tmrConnectionCheck.Start();
+                    //connectionstatus = false;
+                    //Console.WriteLine("请求超时:" + ex.Message);
+                }
+                */
+            }
+
+        }
+
+        private static void resetCallback()
+        {
+            if (networkStream == null)
+                return;
+            if (!string.IsNullOrEmpty(lineBuffer) && lineBuffer.EndsWith("\n"))
+            {
+                //this.processOutput(this.lineBuffer);
+                lineBuffer = "";
+            }
+            AsyncCallback callback = new AsyncCallback(OnReceive);
+            networkStream.BeginRead(buffer, 0, buffer.Length, callback, networkStream);
+        }
+
+        private static void OnReceive(IAsyncResult data)
+        {
+            if (networkStream == null)
+                return;
             try
             {
-                serialport1.OnDataReceived += new SerialSendData.UserRequest(DVLDataReceived);
-                serialport1.OpenPort(SelectXMLData.GetConfiguration("DVLPORT", "value"), 115200, SerialSendData.SerialType.DVLPORT);
+                int bytes = networkStream.EndRead(data);
+                string text = System.Text.Encoding.UTF8.GetString(buffer, 0, bytes);
+                if (!text.Contains("\r\n"))
+                {
+                    lineBuffer += text;
+                }
+                else
+                {
+                    string[] stringSeparators = new string[] { "\r\n" };
+                    List<string> parts = new List<string>(text.Split(stringSeparators, StringSplitOptions.None));
+                    while (parts.Count > 0)
+                    {
+                        lineBuffer += parts[0];
+                        if (parts.Count > 1)
+                        {
+                            // dVL.format = this.lineBuffer;
+                            if (IsValidJson(lineBuffer))
+                            {
+                                if (lineBuffer.Substring(2, 4) == "time")
+                                {
+                                    JsonTextReader jsonReader = new JsonTextReader(new StringReader(lineBuffer));
+                                    JsonSerializer serializer = new JsonSerializer();
+                                    dVL = serializer.Deserialize<DVLWRZ>(jsonReader);
+                                }
 
-                dvl1 = new DVL('1', ref serialport1);
+                                if (lineBuffer.Substring(2, 2) == "ts")
+                                {
+                                    JsonTextReader jsonReader = new JsonTextReader(new StringReader(lineBuffer));
+                                    JsonSerializer serializer = new JsonSerializer();
+                                    dVLWRP = serializer.Deserialize<DVLWRP>(jsonReader);
+                                }
+                            }
+                            //OnDVLDataReceived(this, new StringReceivedEventArgs(this.lineBuffer));
+                            //textBox1.Text = this.lineBuffer + "\n";
+                            //this.processOutput(this.lineBuffer + "\n");
+                            lineBuffer = "";
+                        }
+                        parts.RemoveAt(0);
+                    }
+                }
+                resetCallback();
             }
-            catch
+            catch (IOException ex)
             {
+                networkStream.Close();
+                networkStream.Dispose();
+                networkStream = null;
+                socket.Close();
+                socket.Dispose();
+                socket = null;
+                dVLStatus.connection = false;
+                dVL.velocity_valid = false;
+            }
+        }
 
+        private static bool IsValidJson(string strInput)
+        {
+            if (string.IsNullOrWhiteSpace(strInput)) { return false; }
+            strInput = strInput.Trim();
+            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
+                (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
+            {
+                try
+                {
+                    var obj = JToken.Parse(strInput);
+                    return true;
+                }
+                catch (JsonReaderException jex)
+                {
+                    //Exception in parsing json
+                    Console.WriteLine(jex.Message);
+                    return false;
+                }
+                catch (Exception ex) //some other exception
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 
         public static void CloseDVL()
         {
-            serialport1.ClosePort();
+            if (threadCalcDeadReckoning != null) threadCalcDeadReckoning.Abort();
+
+            if (dVLStatus.dvltype == DVLType.Serial)
+            {
+                //serialport1.ClosePort();
+            }
+
+            if (dVLStatus.dvltype == DVLType.Network)
+            {
+                if (threadDVLConnection != null) threadDVLConnection.Abort();
+            }
         }
+
 
         private static void DVLDataReceived(object sender, ReceivedEventArgs e)
         {
@@ -1408,7 +1985,17 @@ namespace WpfApp1
                     dvl1.fom = Convert.ToDouble(DVLData[5]);
                     dvl1.altitude = Convert.ToDouble(DVLData[6]);
                     if (DVLData[7] == "y")
+                    {
                         dvl1.valid = true;
+                        RecordDVL tempdvl = new RecordDVL();
+                        tempdvl.time = dvl1.time;
+                        tempdvl.vx = dvl1.vx;
+                        tempdvl.vy = dvl1.vy;
+                        tempdvl.vz = dvl1.vz;
+                        tempdvl.heading = GlobalNavigation.nav1.GetHeading();
+                        dvlMessages.Add(tempdvl);
+                    }
+                        
                     if (DVLData[7] == "n")
                         dvl1.valid = false;
                     dvl1.status = Convert.ToInt32(DVLData[8]);
@@ -1417,6 +2004,283 @@ namespace WpfApp1
             catch { }
         }
 
+        private static void tmrConnectionCheck_Tick(object sender, EventArgs e)
+        {
+            tmrConnectionCheck.Stop();
+            socket = new TcpClient();
+            try
+            {
+                socket.Connect("192.168.194.95", 16171);
+                networkStream = socket.GetStream();
+                buffer = new byte[2048];
+                resetCallback();
+                dVLStatus.connection = true;
+                //connectionstatus = true;
+
+            }
+            catch (SocketException ex)
+            {
+                socket.Dispose();
+                socket = null;
+                dVL.velocity_valid = false;
+                dVLStatus.connection = false;
+                //connectionstatus = false;
+                //Console.WriteLine("请求超时:" + ex.Message);
+                tmrConnectionCheck.Start();
+            }
+        }
+
+        private static double ConvertToRadians(double angle)
+        {
+            return (Math.PI / 180) * angle;
+        }
+
+        private static double ConvertToDegrees(double radian)
+        {
+            return (180 / Math.PI) * radian;
+        }
+
+        private static Point convertToXY(double distance, double bearing, Point origin)
+        {
+            double bearingRad = bearing * Math.PI / 180.0;  // Convert bearing to radians
+
+            double delta_x = distance * Math.Sin(bearingRad);
+            double delta_y = distance * Math.Cos(bearingRad);
+
+            Point result = new Point();
+            result.X = origin.X + delta_x;
+            result.Y = origin.Y + delta_y;
+
+            return result;
+        }
+    }
+
+    public static class Utm
+    {
+        // Grid granularity for rounding UTM coordinates to generate MapXY.
+        const double grid_size = 100000.0;    ///< 100 km grid
+
+        // WGS84 Parameters
+        const double WGS84_A = 6378137.0;   ///< major axis
+        const double WGS84_B = 6356752.31424518;	///< minor axis
+        const double WGS84_F = 0.0033528107;    ///< ellipsoid flattening
+        const double WGS84_E = 0.0818191908;        ///< first eccentricity
+        const double WGS84_EP = 0.0820944379;       ///< second eccentricity
+
+        // UTM Parameters
+        const double UTM_K0 = 0.9996;           ///< scale factor
+        const double UTM_FE = 500000.0;     ///< false easting
+        const double UTM_FN_N = 0.0;         ///< false northing, northern hemisphere
+        const double UTM_FN_S = 10000000.0;  ///< false northing, southern hemisphere
+        const double UTM_E2 = (WGS84_E * WGS84_E);  ///< e^2
+        const double UTM_E4 = (UTM_E2 * UTM_E2);        ///< e^4
+        const double UTM_E6 = (UTM_E4 * UTM_E2);        ///< e^6
+        const double UTM_EP2 = (UTM_E2 / (1 - UTM_E2)); ///< e'^2
+
+        public static double UTMEasting, UTMNorthing;
+        public static string UTMZone;
+        public static double Lat, Long;
+
+        /**
+         * Determine the correct UTM letter designator for the
+         * given latitude
+         *
+         * @returns 'Z' if latitude is outside the UTM limits of 84N to 80S
+         *
+         * Written by Chuck Gantz- chuck.gantz@globalstar.com
+         */
+
+        private static double ConvertToRadians(double angle)
+        {
+            return (Math.PI / 180) * angle;
+        }
+
+        private static double ConvertToDegrees(double radian)
+        {
+            return (180 / Math.PI) * radian;
+        }
+
+        public static char UTMLetterDesignator(double Lat)
+        {
+            char LetterDesignator;
+
+            if ((84 >= Lat) && (Lat >= 72)) LetterDesignator = 'X';
+            else if ((72 > Lat) && (Lat >= 64)) LetterDesignator = 'W';
+            else if ((64 > Lat) && (Lat >= 56)) LetterDesignator = 'V';
+            else if ((56 > Lat) && (Lat >= 48)) LetterDesignator = 'U';
+            else if ((48 > Lat) && (Lat >= 40)) LetterDesignator = 'T';
+            else if ((40 > Lat) && (Lat >= 32)) LetterDesignator = 'S';
+            else if ((32 > Lat) && (Lat >= 24)) LetterDesignator = 'R';
+            else if ((24 > Lat) && (Lat >= 16)) LetterDesignator = 'Q';
+            else if ((16 > Lat) && (Lat >= 8)) LetterDesignator = 'P';
+            else if ((8 > Lat) && (Lat >= 0)) LetterDesignator = 'N';
+            else if ((0 > Lat) && (Lat >= -8)) LetterDesignator = 'M';
+            else if ((-8 > Lat) && (Lat >= -16)) LetterDesignator = 'L';
+            else if ((-16 > Lat) && (Lat >= -24)) LetterDesignator = 'K';
+            else if ((-24 > Lat) && (Lat >= -32)) LetterDesignator = 'J';
+            else if ((-32 > Lat) && (Lat >= -40)) LetterDesignator = 'H';
+            else if ((-40 > Lat) && (Lat >= -48)) LetterDesignator = 'G';
+            else if ((-48 > Lat) && (Lat >= -56)) LetterDesignator = 'F';
+            else if ((-56 > Lat) && (Lat >= -64)) LetterDesignator = 'E';
+            else if ((-64 > Lat) && (Lat >= -72)) LetterDesignator = 'D';
+            else if ((-72 > Lat) && (Lat >= -80)) LetterDesignator = 'C';
+            // 'Z' is an error flag, the Latitude is outside the UTM limits
+            else LetterDesignator = 'Z';
+            return LetterDesignator;
+        }
+
+        /**
+         * Convert lat/long to UTM coords.  Equations from USGS Bulletin 1532
+         *
+         * East Longitudes are positive, West longitudes are negative.
+         * North latitudes are positive, South latitudes are negative
+         * Lat and Long are in fractional degrees
+         *
+         * Written by Chuck Gantz- chuck.gantz@globalstar.com
+         */
+
+        public static void LLtoUTM(double Lat, double Long
+                               )
+        {
+            double a = WGS84_A;
+            double eccSquared = UTM_E2;
+            double k0 = UTM_K0;
+
+            double LongOrigin;
+            double eccPrimeSquared;
+            double N, T, C, A, M;
+
+            //Make sure the longitude is between -180.00 .. 179.9
+            double LongTemp = (Long + 180) - (int)((Long + 180) / 360) * 360 - 180;
+
+            double LatRad = ConvertToRadians(Lat);
+            double LongRad = ConvertToRadians(LongTemp);
+            double LongOriginRad;
+            int ZoneNumber;
+
+            ZoneNumber = (int)((LongTemp + 180) / 6) + 1;
+
+            if (Lat >= 56.0 && Lat < 64.0 && LongTemp >= 3.0 && LongTemp < 12.0)
+
+                ZoneNumber = 32;
+
+            // Special zones for Svalbard
+            if (Lat >= 72.0 && Lat < 84.0)
+            {
+                if (LongTemp >= 0.0 && LongTemp < 9.0) ZoneNumber = 31;
+                else if (LongTemp >= 9.0 && LongTemp < 21.0) ZoneNumber = 33;
+                else if (LongTemp >= 21.0 && LongTemp < 33.0) ZoneNumber = 35;
+                else if (LongTemp >= 33.0 && LongTemp < 42.0) ZoneNumber = 37;
+            }
+            // +3 puts origin in middle of zone
+            LongOrigin = (ZoneNumber - 1) * 6 - 180 + 3;
+            LongOriginRad = ConvertToRadians(LongOrigin);
+
+            //compute the UTM Zone from the latitude and longitude
+            UTMZone = ZoneNumber.ToString() + UTMLetterDesignator(Lat).ToString();
+            //sprintf(UTMZone, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
+
+            eccPrimeSquared = (eccSquared) / (1 - eccSquared);
+
+            N = a / Math.Sqrt(1 - eccSquared * Math.Sin(LatRad) * Math.Sin(LatRad));
+            T = Math.Tan(LatRad) * Math.Tan(LatRad);
+            C = eccPrimeSquared * Math.Cos(LatRad) * Math.Cos(LatRad);
+            A = Math.Cos(LatRad) * (LongRad - LongOriginRad);
+
+            M = a * ((1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64
+                    - 5 * eccSquared * eccSquared * eccSquared / 256) * LatRad
+                   - (3 * eccSquared / 8 + 3 * eccSquared * eccSquared / 32
+                      + 45 * eccSquared * eccSquared * eccSquared / 1024) * Math.Sin(2 * LatRad)
+                   + (15 * eccSquared * eccSquared / 256
+                      + 45 * eccSquared * eccSquared * eccSquared / 1024) * Math.Sin(4 * LatRad)
+                   - (35 * eccSquared * eccSquared * eccSquared / 3072) * Math.Sin(6 * LatRad));
+
+            UTMEasting = (double)
+            (k0 * N * (A + (1 - T + C) * A * A * A / 6
+                   + (5 - 18 * T + T * T + 72 * C - 58 * eccPrimeSquared) * A * A * A * A * A / 120)
+             + 500000.0);
+
+            UTMNorthing = (double)
+            (k0 * (M + N * Math.Tan(LatRad)
+                 * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A * A * A * A / 24
+                   + (61 - 58 * T + T * T + 600 * C - 330 * eccPrimeSquared) * A * A * A * A * A * A / 720)));
+
+            if (Lat < 0)
+            {
+                //10000000 meter offset for southern hemisphere
+                UTMNorthing += 10000000.0;
+            }
+        }
+        /**
+     * Converts UTM coords to lat/long.  Equations from USGS Bulletin 1532
+     *
+     * East Longitudes are positive, West longitudes are negative.
+     * North latitudes are positive, South latitudes are negative
+     * Lat and Long are in fractional degrees.
+     *
+     * Written by Chuck Gantz- chuck.gantz@globalstar.com
+     */
+        public static void UTMtoLL(double UTMNorthing, double UTMEasting,
+                               string UTMZone)
+        {
+            double k0 = UTM_K0;
+            double a = WGS84_A;
+            double eccSquared = UTM_E2;
+            double eccPrimeSquared;
+            double e1 = (1 - Math.Sqrt(1 - eccSquared)) / (1 + Math.Sqrt(1 - eccSquared));
+            double N1, T1, C1, R1, D, M;
+            double LongOrigin;
+            double mu, phi1Rad;
+            double x, y;
+            int ZoneNumber;
+            char ZoneLetter;
+
+            x = UTMEasting - 500000.0; //remove 500,000 meter offset for longitude
+            y = UTMNorthing;
+
+            ZoneNumber = Convert.ToInt32(UTMZone.Substring(0, 2));
+            ZoneLetter = Convert.ToChar(UTMZone.Substring(2, 1));
+
+            //ZoneNumber = strtoul(UTMZone, &ZoneLetter, 10);
+            if ((ZoneLetter - 'N') < 0)
+            {
+                //remove 10,000,000 meter offset used for southern hemisphere
+                y -= 10000000.0;
+            }
+
+            //+3 puts origin in middle of zone
+            LongOrigin = (ZoneNumber - 1) * 6 - 180 + 3;
+            eccPrimeSquared = (eccSquared) / (1 - eccSquared);
+
+            M = y / k0;
+            mu = M / (a * (1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64
+                       - 5 * eccSquared * eccSquared * eccSquared / 256));
+
+            phi1Rad = mu + ((3 * e1 / 2 - 27 * e1 * e1 * e1 / 32) * Math.Sin(2 * mu)
+                            + (21 * e1 * e1 / 16 - 55 * e1 * e1 * e1 * e1 / 32) * Math.Sin(4 * mu)
+                            + (151 * e1 * e1 * e1 / 96) * Math.Sin(6 * mu));
+
+            N1 = a / Math.Sqrt(1 - eccSquared * Math.Sin(phi1Rad) * Math.Sin(phi1Rad));
+            T1 = Math.Tan(phi1Rad) * Math.Tan(phi1Rad);
+            C1 = eccPrimeSquared * Math.Cos(phi1Rad) * Math.Cos(phi1Rad);
+            R1 = a * (1 - eccSquared) / Math.Pow(1 - eccSquared * Math.Sin(phi1Rad) * Math.Sin(phi1Rad), 1.5);
+            D = x / (N1 * k0);
+
+            Lat = phi1Rad - ((N1 * Math.Tan(phi1Rad) / R1)
+                             * (D * D / 2
+                               - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * D * D * D * D / 24
+                               + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared
+                                 - 3 * C1 * C1) * D * D * D * D * D * D / 720));
+
+            Lat = ConvertToDegrees(Lat);
+
+            Long = ((D - (1 + 2 * T1 + C1) * D * D * D / 6
+                         + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eccPrimeSquared + 24 * T1 * T1)
+                         * D * D * D * D * D / 120)
+                        / Math.Cos(phi1Rad));
+            Long = LongOrigin + ConvertToDegrees(Long);
+
+        }
 
     }
 
@@ -1431,6 +2295,8 @@ namespace WpfApp1
         public static NavCommUserControl NavCommUserControl;
 
         private static MTi mti;
+
+        public static string[] CurrentGNSSMessage = new string[2] { "", "" };
 
         public static void CreateNav()
         {
@@ -1906,6 +2772,8 @@ namespace WpfApp1
             string GPS = new string(e.DataReceived);
             //string[] GPSLine = GPS.Split('\r', '\n');
             string GPSLine = GPS;
+            CurrentGNSSMessage[0] = GPSLine;
+            CurrentGNSSMessage[1] = "1";
             if (GPSLine.Length == 0)
                 return;
             try
@@ -2052,8 +2920,6 @@ namespace WpfApp1
         public static void CloseGPS()
         {
             serialport2.ClosePort();
-
-
         }
 
         public static double Nmea2DecDeg(string NmeaLonLat, string Hemisphere)

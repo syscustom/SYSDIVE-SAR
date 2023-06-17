@@ -35,6 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>WpfApp1.App</StartupObject>
@@ -63,6 +64,9 @@
     <Reference Include="Iocomp.Instrumentation.WF40.Pro, Version=4.0.4.13285, Culture=neutral, PublicKeyToken=096a9279a87304f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Iocomp\Product\.Net\WF40\Instrumentation\4.04\Iocomp.Instrumentation.WF40.Pro.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SDK">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\BlueView\ProViewer 4.2.0.8521\SDK.dll</HintPath>
@@ -146,6 +150,9 @@
     </Compile>
     <Compile Include="frmSensorSettings.xaml.cs">
       <DependentUpon>frmSensorSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="frmSetDiverPosition.xaml.cs">
+      <DependentUpon>frmSetDiverPosition.xaml</DependentUpon>
     </Compile>
     <Compile Include="frmStartDiveConfirmation.xaml.cs">
       <DependentUpon>frmStartDiveConfirmation.xaml</DependentUpon>
@@ -281,6 +288,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="frmSetDiverPosition.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="frmSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -358,6 +369,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -430,6 +442,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
+    <Resource Include="CustomMarkers\main-arrow.png" />
     <Resource Include="Resources\Warning.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

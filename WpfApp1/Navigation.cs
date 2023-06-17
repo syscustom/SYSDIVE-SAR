@@ -51,14 +51,17 @@ namespace WpfApp1
         private bool mblnDepthZeroSwitch = false;
         private double mdblHeadingZero = 0.0;
         private bool mblnHeadingZeroSwitch = false;
-        private double mdblDistance = 0.0;
-        private double mdblBearing = 0.0;
+        private double mdblDistance = -1;
+        private double mdblBearing = -1;
         private WayPoint waypoint = new WayPoint();
 
         private double mdbllatitude = 0.0; //39.056531162330714;
         private double mdbllongitude = 0.0; //117.06059910052493;
         private bool mblngpsvalid = false;
         private double fluiddensity = 997.0;
+
+        public double ClockAngel { get; set; } = -1;
+        public double AntiClockAngel { get; set; } = -1;
 
         public double FluidDensity
         {

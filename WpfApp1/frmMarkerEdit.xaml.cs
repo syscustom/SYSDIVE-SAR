@@ -418,64 +418,66 @@ namespace WpfApp1
 
             lblDepthInfo.Background = new SolidColorBrush(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF));
 
+            
             switch (_index)
             {
                 case 0:
                     lblLatDeg.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 1:
                     lblLatMin.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 2:
                     lblLatSec1.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 3:
                     lblLatSec2.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 4:
                     lblLatInfo.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 5:
                     lblLngDeg.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 6:
                     lblLngMin.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 7:
                     lblLngSec1.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 8:
                     lblLngSec2.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 9:
                     lblLngInfo.Background = Brushes.Blue;
-                    lbl_Home.Content = "地 图 选 择";
-                    blnIsHome = false;
+                    //lbl_Home.Content = "地 图 选 择";
+                    //blnIsHome = false;
                     break;
                 case 10:
                     lblDepthInfo.Background = Brushes.Blue;
-                    lbl_Home.Content = "主 页";
-                    blnIsHome = true;
+                    //lbl_Home.Content = "主 页";
+                    //blnIsHome = true;
                     break;
             }
+            
         }
 
         void tmrButtonCheck_Tick(object sender, EventArgs e)

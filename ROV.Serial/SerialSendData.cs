@@ -299,8 +299,12 @@ namespace ROV.Serial
                             WaitingACKTimeOut = BaseWaitingACKTimeOut;
 
                             //serialPort1.DiscardInBuffer();
-                            if (serialPort1.IsOpen == true)
-                                serialPort1.Write(cmds, 0, cmds.Length);
+                            try
+                            {
+                                if (serialPort1.IsOpen == true)
+                                    serialPort1.Write(cmds, 0, cmds.Length);
+                            }
+                            catch { }
 
                             mblnWaitingACK = SerialLineWaiting.Sensor;
                         }
@@ -338,7 +342,12 @@ namespace ROV.Serial
                             }
 
                             maltxcurrent.Add(m_current);
-                            serialPort1.Write(cmds, 0, cmds.Length);
+                            try
+                            {
+                                if (serialPort1.IsOpen == true)
+                                    serialPort1.Write(cmds, 0, cmds.Length);
+                            }
+                            catch { }
                         }
                         break;
                     case SerialType.BATPORT:
@@ -348,7 +357,12 @@ namespace ROV.Serial
                             byte[] cmds;
                             cmds = (byte[])malCmdQueue[0];
                             malCmdQueue.RemoveAt(0);
-                            serialPort1.Write(cmds, 0, cmds.Length);
+                            try
+                            {
+                                if (serialPort1.IsOpen == true)
+                                    serialPort1.Write(cmds, 0, cmds.Length);
+                            }
+                            catch { }
                         }
                         break;
                     case SerialType.AH500Telemetry:
@@ -358,7 +372,12 @@ namespace ROV.Serial
                             byte[] cmds;
                             cmds = (byte[])malCmdQueue[0];
                             malCmdQueue.RemoveAt(0);
-                            serialPort1.Write(cmds, 0, cmds.Length);
+                            try
+                            {
+                                if (serialPort1.IsOpen == true)
+                                    serialPort1.Write(cmds, 0, cmds.Length);
+                            }
+                            catch { }
                         }
                         break;
                     case SerialType.DCM250BTelemetry:
@@ -368,7 +387,12 @@ namespace ROV.Serial
                             byte[] cmds;
                             cmds = (byte[])malCmdQueue[0];
                             malCmdQueue.RemoveAt(0);
-                            serialPort1.Write(cmds, 0, cmds.Length);
+                            try
+                            {
+                                if (serialPort1.IsOpen == true)
+                                    serialPort1.Write(cmds, 0, cmds.Length);
+                            }
+                            catch { }
                         }
                         break;
                     default:
@@ -1193,7 +1217,11 @@ namespace ROV.Serial
 
                             if (dvlbytescrc.ToString("x2") == dvlsubstr[1]) //CRC校验成功
                             {
-                                OnDataReceived(this, new ReceivedEventArgs(tempbyte1));
+                                if(dvlstr.Substring(0, 3) == "wrx")
+                                {
+                                    serialPort1.DiscardInBuffer();
+                                    OnDataReceived(this, new ReceivedEventArgs(tempbyte1));
+                                }
                             }
                         }
                         catch { }

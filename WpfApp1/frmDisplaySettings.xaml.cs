@@ -34,6 +34,15 @@ namespace WpfApp1
 
             lblBrightLevel.Content = GlobalExternal.BrightLevel.ToString();
 
+            if (Global.LittlePreviewSwitch == true)
+            {
+                lblPreviewWindowInfo.Content = "开启";
+            }
+            else
+            {
+                lblPreviewWindowInfo.Content = "关闭";
+            }
+
             tmrButtonCheck.Tick += new EventHandler(tmrButtonCheck_Tick);
             tmrButtonCheck.Interval = TimeSpan.FromMilliseconds(5);
             tmrButtonCheck.Start();
@@ -109,9 +118,31 @@ namespace WpfApp1
             SelectXMLData.SaveConfiguration("BrightLevel", "value", GlobalExternal.BrightLevel.ToString());
         }
 
+        private void PreviewOnOff()
+        {
+            Global.LittlePreviewSwitch = !Global.LittlePreviewSwitch;
+            if (Global.LittlePreviewSwitch == true)
+            {
+                SelectXMLData.SaveConfiguration("LittlePreview", "value", "1");
+                lblPreviewWindowInfo.Content = "开启";
+            }
+            else
+            {
+                SelectXMLData.SaveConfiguration("LittlePreview", "value", "0");
+                lblPreviewWindowInfo.Content = "关闭";
+            }
+
+
+        }
+
         private void Lbl_Bright_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Bright_Press();
+        }
+
+        private void Lbl_LittlePreview_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            PreviewOnOff();
         }
 
         void tmrButtonCheck_Tick(object sender, EventArgs e)
@@ -202,6 +233,5 @@ namespace WpfApp1
         {
             this.Close();
         }
-
     }
 }

@@ -37,6 +37,7 @@ namespace WpfApp1
         DispatcherTimer tmrFormMonitor = new DispatcherTimer();
         DispatcherTimer tmrTopMost = new DispatcherTimer();
         DispatcherTimer tmrDrawSonar = new DispatcherTimer();
+        DispatcherTimer tmrDrawArrow = new DispatcherTimer();
 
         public frmNavigation()
         {
@@ -44,10 +45,12 @@ namespace WpfApp1
             Content_Nav.Content = GlobalNavigation.NavCommUserControl;
             Content_Map.Content = Global.globalMap;
 
-
-            if (Global.MountVision && Global.VisionSwitch)
+            if(Global.LittlePreviewSwitch)
             {
-                Video_Content.Content = Global.videohost;
+                if (Global.MountVision && Global.VisionSwitch)
+                {
+                    Video_Content.Content = Global.videohost;
+                }
             }
 
             LstWayPoints = Global.LstWayPoints;
@@ -68,6 +71,9 @@ namespace WpfApp1
 
             tmrDrawSonar.Tick += new EventHandler(tmrDrawSonar_Tick);
             tmrDrawSonar.Interval = TimeSpan.FromMilliseconds(40);
+
+            tmrDrawArrow.Tick += new EventHandler(tmrDrawArrow_Tick);
+            tmrDrawArrow.Interval = TimeSpan.FromMilliseconds(500);
         }
 
         private void Power_Press()
@@ -185,17 +191,21 @@ namespace WpfApp1
 
         private void DisposeAllComponent()
         {
-            tmrDrawSonar.Stop();
+            // tmrDrawSonar.Stop();
+            tmrDrawArrow.Stop();
             tmrFormMonitor.Start();
 
             Content_Nav.Content = null;
             Content_Map.Content = null;
 
-            if (Global.MountVision && Global.VisionSwitch)
+            if (Global.LittlePreviewSwitch)
             {
-                Video_Content.Content = null;
+                if (Global.MountVision && Global.VisionSwitch)
+                {
+                    Video_Content.Content = null;
+                }
             }
-
+  
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 if (GlobalSonar.mainModel != null)
                 {
@@ -234,7 +244,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[3] == 0 && GlobalUpBoard.ButtonState[3] == false) //Pressed Location Button
                 {
-
+                    Position_Press();
                     GlobalUpBoard.ButtonState[3] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[3] == 1 && GlobalUpBoard.ButtonState[3] == true)
@@ -276,7 +286,7 @@ namespace WpfApp1
 
                 if (GlobalUpBoard.GPIOLevel[8] == 0 && GlobalUpBoard.ButtonState[8] == false) //Pressed Clear Button
                 {
-
+                    Clear_Press();
                     GlobalUpBoard.ButtonState[8] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[8] == 1 && GlobalUpBoard.ButtonState[8] == true)
@@ -340,12 +350,18 @@ namespace WpfApp1
         {
             this.Topmost = Global.TopMost;
             tmrTopMost.Start();
-            tmrDrawSonar.Start();
+            // tmrDrawSonar.Start();
+            tmrDrawArrow.Start();
+        }
+
+        private void Clear_Press()
+        {
+            Global.CleartAllCurrentPointsRoute();
         }
 
         private void Lbl_Clear_MouseUp(object sender, MouseButtonEventArgs e)
         {
-
+            Clear_Press();
         }
 
         void tmrTopMost_Tick(object sender, EventArgs e)
@@ -378,6 +394,127 @@ namespace WpfApp1
             Sonar_Img.Source = LoadImage(bytesgrabwindows);
         }
 
+        void tmrDrawArrow_Tick(object sender, EventArgs e)
+        {
+            if(GlobalNavigation.nav1.ClockAngel != -1 && GlobalNavigation.nav1.AntiClockAngel != -1)
+            {
+                if(GlobalNavigation.nav1.ClockAngel <= GlobalNavigation.nav1.AntiClockAngel)
+                {
+                    if (GlobalNavigation.nav1.ClockAngel >= 0 && GlobalNavigation.nav1.ClockAngel <= 5)
+                    {
+                        stackRightArrow1.Visibility = Visibility.Hidden;
+                        stackRightArrow2.Visibility = Visibility.Hidden;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
 
+
+                        stackLeftArrow1.Visibility = Visibility.Hidden;
+                        stackLeftArrow2.Visibility = Visibility.Hidden;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+                    }
+
+                    if (GlobalNavigation.nav1.ClockAngel > 5 && GlobalNavigation.nav1.ClockAngel <= 30)
+                    {
+                        stackRightArrow1.Visibility = Visibility.Visible;
+                        stackRightArrow2.Visibility = Visibility.Hidden;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
+
+
+                        stackLeftArrow1.Visibility = Visibility.Hidden;
+                        stackLeftArrow2.Visibility = Visibility.Hidden;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+                    }
+
+                    if (GlobalNavigation.nav1.ClockAngel > 30 && GlobalNavigation.nav1.ClockAngel <= 60)
+                    {
+                        stackRightArrow1.Visibility = Visibility.Visible;
+                        stackRightArrow2.Visibility = Visibility.Visible;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
+
+                        stackLeftArrow1.Visibility = Visibility.Hidden;
+                        stackLeftArrow2.Visibility = Visibility.Hidden;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+                    }
+
+                    if (GlobalNavigation.nav1.ClockAngel > 60)
+                    {
+                        stackRightArrow1.Visibility = Visibility.Visible;
+                        stackRightArrow2.Visibility = Visibility.Visible;
+                        stackRightArrow3.Visibility = Visibility.Visible;
+
+                        stackLeftArrow1.Visibility = Visibility.Hidden;
+                        stackLeftArrow2.Visibility = Visibility.Hidden;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+                    }
+                }
+                else
+                {
+                    if (GlobalNavigation.nav1.AntiClockAngel >= 0 && GlobalNavigation.nav1.AntiClockAngel <= 5)
+                    {
+                        stackLeftArrow1.Visibility = Visibility.Hidden;
+                        stackLeftArrow2.Visibility = Visibility.Hidden;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+
+
+                        stackRightArrow1.Visibility = Visibility.Hidden;
+                        stackRightArrow2.Visibility = Visibility.Hidden;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
+                    }
+
+                    if (GlobalNavigation.nav1.AntiClockAngel > 5 && GlobalNavigation.nav1.AntiClockAngel <= 30)
+                    {
+                        stackLeftArrow1.Visibility = Visibility.Visible;
+                        stackLeftArrow2.Visibility = Visibility.Hidden;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+
+
+                        stackRightArrow1.Visibility = Visibility.Hidden;
+                        stackRightArrow2.Visibility = Visibility.Hidden;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
+                    }
+
+                    if (GlobalNavigation.nav1.AntiClockAngel > 30 && GlobalNavigation.nav1.AntiClockAngel <= 60)
+                    {
+                        stackLeftArrow1.Visibility = Visibility.Visible;
+                        stackLeftArrow2.Visibility = Visibility.Visible;
+                        stackLeftArrow3.Visibility = Visibility.Hidden;
+
+                        stackRightArrow1.Visibility = Visibility.Hidden;
+                        stackRightArrow2.Visibility = Visibility.Hidden;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
+                    }
+
+                    if (GlobalNavigation.nav1.AntiClockAngel > 60)
+                    {
+                        stackLeftArrow1.Visibility = Visibility.Visible;
+                        stackLeftArrow2.Visibility = Visibility.Visible;
+                        stackLeftArrow3.Visibility = Visibility.Visible;
+
+                        stackRightArrow1.Visibility = Visibility.Hidden;
+                        stackRightArrow2.Visibility = Visibility.Hidden;
+                        stackRightArrow3.Visibility = Visibility.Hidden;
+                    }
+
+
+                }
+            }
+        }
+
+        private void Position_Press()
+        {
+            DisposeAllComponent();
+            //frmSetDiverPosition frmsetDiverPosition = new frmSetDiverPosition();
+            //mainwindow.Show();
+            this.Close();
+
+
+            GlobalDVL.dVLStatus.Latitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLat", "value"));
+            GlobalDVL.dVLStatus.Longitude = Convert.ToDouble(SelectXMLData.GetConfiguration("DefaultLng", "value"));
+            GlobalDVL.dVLStatus.satellitefix = true;
+        }
+
+        private void Lbl_Position_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Position_Press();
+        }
     }
 }

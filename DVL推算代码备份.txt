@@ -1,0 +1,95 @@
+                    /*
+                    if (isInstalled && DVLNavigationMode)
+                    {
+                        //DVL 导航推算部分
+                        //if (dVLStatus.satellitefix == true)
+                        //{
+                           // if (dvl1.valid == true)
+                           // {
+                                double xdistance = dvl1.vx * dvl1.time * 0.001;
+                                double ydistance = dvl1.vy * dvl1.time * 0.001;
+                                double hedistance = Math.Sqrt(xdistance * xdistance + ydistance * ydistance);
+                                double headingdistance = 0.0;
+
+                                double cosA = (hedistance * hedistance + xdistance * xdistance - ydistance * ydistance) / (2 * xdistance * hedistance);
+                                double angleA = Math.Acos(cosA);
+                                if (dvl1.vx > 0)
+                                {
+                                    if (dvl1.vy > 0)
+                                        headingdistance = GlobalNavigation.nav1.GetHeading() + angleA;
+                                    else
+                                        headingdistance = GlobalNavigation.nav1.GetHeading() - angleA;
+                                }
+
+                                if (dvl1.vx < 0)
+                                {
+                                    if (dvl1.vy > 0)
+                                        headingdistance = GlobalNavigation.nav1.GetHeading() + (180 - angleA);
+
+                                    else
+                                        headingdistance = GlobalNavigation.nav1.GetHeading() - (180 - angleA);
+                                }
+
+                                if (headingdistance >= 360) headingdistance -= 360;
+                                if (headingdistance < 0) headingdistance += 360;
+
+                                Point origin = new Point(0.0, 0.0);
+                                Point convertedPoint = convertToXY(hedistance, headingdistance, origin);
+
+                                Utm.LLtoUTM(GlobalDVL.dVLStatus.Latitude, GlobalDVL.dVLStatus.Longitude);
+                                double newUTMEasting = Utm.UTMEasting + convertedPoint.X;
+                                double newUTMNorthing = Utm.UTMNorthing + convertedPoint.Y;
+
+                                Utm.UTMtoLL(newUTMNorthing, newUTMEasting, Utm.UTMZone);
+                                dVLStatus.Latitude = Utm.Lat;
+                                dVLStatus.Longitude = Utm.Long;
+                                dVLStatus.UTMEasting = newUTMEasting;
+                                dVLStatus.UTMNorthing = newUTMNorthing;
+                                dVLStatus.UTMZone = Utm.UTMZone;
+                                dVLStatus.HeadingDistance = headingdistance;
+
+                                /*
+                                double lat1 = 0.0;
+                                double lng1 = 0.0;
+
+                                lat1 = GlobalDVL.dVLStatus.Latitude;
+                                lng1 = GlobalDVL.dVLStatus.Longitude;
+
+                                //double vx2 = 0.0;
+                                //double vy2 = 0.0;
+                                //vx2 = dvl1.vx * dvl1.vx;
+                                //vy2 = dvl1.vy * dvl1.vy;
+
+                                //double hesudu = Math.Sqrt(vx2 + vy2);
+                                //double dx = dvl1.vx * dvl1.time * 0.001;
+                                //double dy = dvl1.vy * dvl1.time * 0.001;
+
+                                double d = 0.0;
+                                //d = Math.Sqrt(dx * dx + dy * dy);
+                                //d = hesudu * dvl1.time * 0.001;
+                                d = hedistance;
+                                const double R = 6371000;
+                                double θ = headingdistance; //GlobalNavigation.nav1.GetHeading();
+
+                                double δ = d / R;
+                                θ = ConvertToRadians(θ);
+                                lat1 = ConvertToRadians(lat1);
+                                lng1 = ConvertToRadians(lng1);
+
+
+                                double sinφ2 = Math.Sin(lat1) * Math.Cos(δ) + Math.Cos(lat1) * Math.Sin(δ) * Math.Cos(θ);
+                                double φ2 = Math.Asin(sinφ2);
+                                double y = Math.Sin(θ) * Math.Sin(δ) * Math.Cos(lat1);
+                                double x = Math.Cos(δ) - Math.Sin(lat1) * sinφ2;
+                                double λ2 = lng1 + Math.Atan2(y, x);
+
+                                double lat2 = ConvertToDegrees(φ2);
+                                double lon2 = ConvertToDegrees(λ2);
+
+                                dVLStatus.Latitude = lat2;
+                                dVLStatus.Longitude = lon2;
+                                */
+                           // }
+                        //}
+                    }
+                */

@@ -380,18 +380,21 @@ namespace WpfApp1
             tmrTopMost.Stop();
 
             Content_Nav.Content = null;
-            if (MapHost != null)
+            if (Global.LittlePreviewSwitch)
             {
-                MapHost.Child = null;
-                MapContainer.ReturnHPanel().Controls.Remove(MapHost);
-            }
-
-            if(Global.MountVision)
-                if(VideoHost !=null)
+                if (MapHost != null)
                 {
-                    VideoHost.Child = null;
-                    VideoContainer.ReturnHPanel().Controls.Remove(VideoHost);
+                    MapHost.Child = null;
+                    MapContainer.ReturnHPanel().Controls.Remove(MapHost);
                 }
+
+                if (Global.MountVision)
+                    if (VideoHost != null)
+                    {
+                        VideoHost.Child = null;
+                        VideoContainer.ReturnHPanel().Controls.Remove(VideoHost);
+                    }
+            }
         }
 
         private void DisposeAllComponent()
@@ -404,12 +407,6 @@ namespace WpfApp1
             tmrSonarMonitor.Stop();
             tmrFormMonitor.Start();
             tmrTopMost.Stop();
-
-            if (MapHost != null)
-            {
-                MapHost.Child = null;
-                MapContainer.ReturnHPanel().Controls.Remove(MapHost);
-            }
 
             if(RangeHostTitle != null)
             {
@@ -447,14 +444,23 @@ namespace WpfApp1
                 SoanrGainInfoContainer.ReturnHPanel().Controls.Remove(GainHost);
             }
 
-            if (Global.MountVision)
-                if (VideoHost != null)
+            if (Global.LittlePreviewSwitch)
+            {
+                if (MapHost != null)
                 {
-                    VideoHost.Child = null;
-                    VideoContainer.ReturnHPanel().Controls.Remove(VideoHost);
+                    MapHost.Child = null;
+                    MapContainer.ReturnHPanel().Controls.Remove(MapHost);
                 }
 
-            //if (GlobalOculus.isInstalled && GlobalOculus.SonarSwitch)
+                if (Global.MountVision)
+                    if (VideoHost != null)
+                    {
+                        VideoHost.Child = null;
+                        VideoContainer.ReturnHPanel().Controls.Remove(VideoHost);
+                    }
+            }
+
+
             if (GlobalOculus.isInstalled)
                 {
                 if (DLLIsLoaded())
@@ -810,18 +816,22 @@ namespace WpfApp1
 
             Content_Nav.Content = GlobalNavigation.NavCommUserControl;
 
-            MapHost = new ElementHost();
-            MapHost.Dock = DockStyle.Fill;
-            MapContainer.ReturnHPanel().Controls.Add(MapHost);
-            MapHost.Child = Global.globalMap;
-
-            if (Global.MountVision && Global.VisionSwitch)
+            if(Global.LittlePreviewSwitch)
             {
-                VideoHost = new ElementHost();
-                VideoHost.Dock = DockStyle.Fill;
-                VideoContainer.ReturnHPanel().Controls.Add(VideoHost);
-                VideoHost.Child = Global.videohost;
+                MapHost = new ElementHost();
+                MapHost.Dock = DockStyle.Fill;
+                MapContainer.ReturnHPanel().Controls.Add(MapHost);
+                MapHost.Child = Global.globalMap;
+
+                if (Global.MountVision && Global.VisionSwitch)
+                {
+                    VideoHost = new ElementHost();
+                    VideoHost.Dock = DockStyle.Fill;
+                    VideoContainer.ReturnHPanel().Controls.Add(VideoHost);
+                    VideoHost.Child = Global.videohost;
+                }
             }
+
 
             tmrTopMost.Start();
 

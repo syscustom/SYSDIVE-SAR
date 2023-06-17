@@ -19,6 +19,8 @@ using System.Windows.Threading;
 using System.Windows.Forms.Integration;
 using System.Windows.Forms;
 using System.IO;
+using System.Globalization;
+using System.Threading;
 
 namespace WpfApp1
 {
@@ -32,6 +34,8 @@ namespace WpfApp1
         DispatcherTimer tmrFormMonitor = new DispatcherTimer();
         DispatcherTimer tmrTopMost = new DispatcherTimer();
         DispatcherTimer tmrDrawSonar = new DispatcherTimer();
+
+        //Thread threadGNSSMessage;
 
         ElementHost MapHost;
         ElementHost SonarHost;
@@ -75,7 +79,25 @@ namespace WpfApp1
             tmrDrawSonar.Tick += new EventHandler(tmrDrawSonar_Tick);
             tmrDrawSonar.Interval = TimeSpan.FromMilliseconds(40);
 
+            //threadGNSSMessage = new Thread(new ThreadStart(StartCollectingMessage));
         }
+/*
+        private void StartCollectingMessage()
+        {
+            while (true)
+            {
+                Thread.Sleep(50);
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)delegate
+                {
+                    byte[] bytesgrabwindows = Global.SonarWindow.SonarGrabWindows();
+                    Sonar_Image.Source = Convert(LoadImage(bytesgrabwindows));
+                });
+
+                //this.Dispatcher.Invoke((EventHandler)delegate {
+                //    txtGNSSMessage.Text = "真的只要一行代码"; });
+            }
+        }
+*/
 
         private void Power_Press()
         {
@@ -199,23 +221,27 @@ namespace WpfApp1
 
         private void DisposeAllComponent()
         {
-            tmrDrawSonar.Stop();
+            //tmrDrawSonar.Stop();
             tmrFormMonitor.Start();
             //Content_Map.Content = null;
             Content_Nav.Content = null;
             Video_Content.Content = null;
 
-            if (MapHost != null)
+            if (Global.LittlePreviewSwitch)
             {
-                MapHost.Child = null;
-                MapContainer.ReturnHPanel().Controls.Remove(MapHost);
+                if (MapHost != null)
+                {
+                    MapHost.Child = null;
+                    MapContainer.ReturnHPanel().Controls.Remove(MapHost);
+                }
+
+                if (SonarHost != null)
+                {
+                    SonarHost.Child = null;
+                    SonarContainer.ReturnHPanel().Controls.Remove(SonarHost);
+                }
             }
 
-            if (SonarHost != null)
-            {
-                SonarHost.Child = null;
-                SonarContainer.ReturnHPanel().Controls.Remove(SonarHost);
-            }
 
             if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
                 if (GlobalSonar.mainModel != null)
@@ -316,7 +342,6 @@ namespace WpfApp1
                 }
                 if (GlobalUpBoard.GPIOLevel[9] == 1 && GlobalUpBoard.ButtonState[9] == true)
                     GlobalUpBoard.ButtonState[9] = false;
-
             }
         }
 
@@ -329,26 +354,34 @@ namespace WpfApp1
         {
             this.Topmost = Global.TopMost;
             tmrTopMost.Start();
-            tmrDrawSonar.Start();
+            
+            //tmrDrawSonar.Start();
 
-            MapHost = new ElementHost();
-            MapHost.Dock = DockStyle.Fill;
-            MapContainer.ReturnHPanel().Controls.Add(MapHost);
-            MapHost.Child = Global.globalMap;
+            if (Global.LittlePreviewSwitch)
+            {
+                MapHost = new ElementHost();
+                MapHost.Dock = DockStyle.Fill;
+                MapContainer.ReturnHPanel().Controls.Add(MapHost);
+                MapHost.Child = Global.globalMap;
 
 
-            Sonar_Image = new System.Windows.Controls.Image();
-            Sonar_Image.Visibility = Visibility.Hidden;
-            Sonar_Image.Height = 119;
-            Sonar_Image.Width = 190;
-            Thickness thickness = new Thickness(49, 370, 0, 0);
-            Sonar_Image.Margin = thickness;  
+                Sonar_Image = new System.Windows.Controls.Image();
+                Sonar_Image.Visibility = Visibility.Hidden;
+                Sonar_Image.Height = 119;
+                Sonar_Image.Width = 190;
+                Thickness thickness = new Thickness(49, 370, 0, 0);
+                Sonar_Image.Margin = thickness;
 
-            SonarHost = new ElementHost();
-            SonarHost.Dock = DockStyle.Fill;
-            SonarContainer.ReturnHPanel().Controls.Add(SonarHost);
-            SonarHost.Child = Sonar_Image;
-            Sonar_Image.Visibility = Visibility.Visible;
+                SonarHost = new ElementHost();
+                SonarHost.Dock = DockStyle.Fill;
+                SonarContainer.ReturnHPanel().Controls.Add(SonarHost);
+                SonarHost.Child = Sonar_Image;
+                Sonar_Image.Visibility = Visibility.Visible;
+
+                //threadGNSSMessage.Start();
+            }
+
+            
         }
 
         private void Lbl_Display_MouseUp(object sender, MouseButtonEventArgs e)
@@ -363,7 +396,13 @@ namespace WpfApp1
             this.Close();
         }
 
-        private BitmapImage LoadImage(byte[] imageData)
+        void tmrTopMost_Tick(object sender, EventArgs e)
+        {
+            this.Topmost = Global.TopMost;
+            this.Focus();
+        }
+
+        private BitmapImage LoadImage1(byte[] imageData)
         {
             if (imageData == null || imageData.Length == 0) return null;
             var image = new BitmapImage();
@@ -381,16 +420,103 @@ namespace WpfApp1
             return image;
         }
 
+        private Bitmap LoadImage(byte[] imageData)
+        {
+
+            using (MemoryStream stream = new MemoryStream(imageData))
+            {
+                Bitmap bitmap = new Bitmap(stream);
+                return bitmap;
+            }     
+        }
+
         void tmrDrawSonar_Tick(object sender, EventArgs e)
         {
             byte[] bytesgrabwindows = Global.SonarWindow.SonarGrabWindows();
-            Sonar_Image.Source = LoadImage(bytesgrabwindows);
+            Sonar_Image.Source = Convert(LoadImage(bytesgrabwindows));
         }
 
-        void tmrTopMost_Tick(object sender, EventArgs e)
+        public static BitmapSource Convert(System.Drawing.Bitmap bitmap)
         {
-            this.Topmost = Global.TopMost;
-            this.Focus();
+            var bitmapData = bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
+
+            var bitmapSource = BitmapSource.Create(
+                bitmapData.Width, bitmapData.Height,
+                bitmap.HorizontalResolution, bitmap.VerticalResolution,
+                ConvertPixelFormat(bitmap.PixelFormat), null,
+                bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
+
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmapSource;
+
+        }
+
+        private static System.Windows.Media.PixelFormat ConvertPixelFormat(System.Drawing.Imaging.PixelFormat sourceFormat)
+        {
+            switch (sourceFormat)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                    return PixelFormats.Bgr24;
+
+                case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
+                    return PixelFormats.Bgra32;
+
+                case System.Drawing.Imaging.PixelFormat.Format32bppRgb:
+                    return PixelFormats.Bgr32;
+
+                    // .. as many as you need...
+            }
+            return new System.Windows.Media.PixelFormat();
+        }
+
+    }
+
+    [ValueConversion(typeof(Bitmap), typeof(ImageSource))]
+    public class BitmapToImageSourceConverter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Bitmap bitmap = value as Bitmap;
+            if (bitmap == null)
+                return null;
+
+            var bitmapData = bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
+
+            var bitmapSource = BitmapSource.Create(
+                bitmapData.Width, bitmapData.Height, 96, 96, ConvertPixelFormat(bitmap.PixelFormat), null,
+                bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
+
+            bitmap.UnlockBits(bitmapData);
+            return bitmapSource;
+        }
+
+        private static System.Windows.Media.PixelFormat ConvertPixelFormat(System.Drawing.Imaging.PixelFormat sourceFormat)
+        {
+            switch (sourceFormat)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                    return PixelFormats.Bgr24;
+
+                case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
+                    return PixelFormats.Bgra32;
+
+                case System.Drawing.Imaging.PixelFormat.Format32bppRgb:
+                    return PixelFormats.Bgr32;
+
+                    // .. as many as you need...
+            }
+            return new System.Windows.Media.PixelFormat();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

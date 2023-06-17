@@ -16,48 +16,12 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Background="Blue"/>
+            <Border Grid.Row="1" Background="Black"/>
+            <Border Grid.Row="2" Background="Black"/>
+            <Border Grid.Row="3" Background="Black"/>
+            <Border Grid.Row="4" Background="Black"/>
 
             <Label x:Name="lbl_Home" Content="主 页" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="0" MouseUp="Lbl_Home_MouseUp">
-                <Label.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Label.RenderTransform>
-            </Label>
-            <Label x:Name="lbl_Select" Content="选 择" HorizontalAlignment="Center" Height="34" Margin="-14,45,-14,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="1">
-                <Label.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Label.RenderTransform>
-            </Label>
-            <Label x:Name="lbl_Delete" Content="删 除" HorizontalAlignment="Center" Height="34" Margin="-13,41,-15,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="2">
-                <Label.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Label.RenderTransform>
-            </Label>
-            <Label x:Name="lbl_Edit" Content="编 辑" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="3">
-                <Label.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Label.RenderTransform>
-            </Label>
-            <Label x:Name="lbl_ADD" Content="添 加" HorizontalAlignment="Center" Height="34" Margin="-18,38,-18,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="4">
                 <Label.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -80,8 +44,10 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Background="Red"/>
+            <Border Grid.Row="2" Background="Black"/>
             <Border Grid.Row="3" Background="Black"/>
-            <Label x:Name="lbl_Power" Content="电 源" HorizontalAlignment="Center" Height="34" Margin="-15,41,-17,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Power_MouseUp">
+            <Border Grid.Row="4" Background="Black"/>
+            <Label x:Name="lbl_Power" Content="电 源" HorizontalAlignment="Center" Height="34" Margin="-15,41,-17,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Power_MouseUp" Grid.Row="0" >
                 <Label.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -91,7 +57,7 @@
                     </TransformGroup>
                 </Label.RenderTransform>
             </Label>
-            <Label x:Name="lbl_Missions" Content="任 务" HorizontalAlignment="Center" Height="34" Margin="-16,39,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" Grid.Row="4">
+            <Label x:Name="lbl_Back" Content="后 退" HorizontalAlignment="Center" Height="34" Margin="-16,42,-16,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="0.5,0.5" FontSize="24" Foreground="White" FontFamily="SimSun" MouseUp="Lbl_Back_MouseUp" Grid.Row="1" >
                 <Label.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -101,17 +67,6 @@
                     </TransformGroup>
                 </Label.RenderTransform>
             </Label>
-            <Image x:Name="imgUpArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="0.5,0.5" Grid.Row="1" MouseUp="ImgUpArrow_MouseUp">
-                <Image.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="180"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Image.RenderTransform>
-            </Image>
-            <Image x:Name="imgDownArrow" HorizontalAlignment="Left" Height="45" Margin="0,38,0,0" VerticalAlignment="Top" Width="42" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" Grid.Row="2" MouseUp="ImgDownArrow_MouseUp"/>
 
         </Grid>
         <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Margin="42,0" Width="940"/>
@@ -120,6 +75,7 @@
         <Label x:Name="lblQuality" Content="信号质量：" HorizontalAlignment="Left" Height="35" Margin="750,45,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
         <Label x:Name="lblPDOP" Content="PDOP：" HorizontalAlignment="Left" Height="34" Margin="594,136,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
         <Label x:Name="lblHDOP" Content="HDOP：" HorizontalAlignment="Left" Height="34" Margin="750,136,0,0" VerticalAlignment="Top" Width="100" Foreground="LightGray" FontSize="20"/>
+        <TextBox x:Name="txtGNSSMessage" HorizontalAlignment="Left" Height="422" Margin="60,51,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="903" IsReadOnly="True" FontSize="18"/>
 
     </Grid>
 </Window>

@@ -107,13 +107,13 @@ namespace WpfApp1
                 case Global.GNSSType.Internal:
                     Global.GNSSMode = Global.GNSSType.Float;
                     lblGNSSSwitch.Content = "外置";
-                    GlobalUpBoard.SetPinState(31, GlobalUpBoard.HIGH);
+                    GlobalUpBoard.SetPinState(Global.NavPort, GlobalUpBoard.HIGH);
                     SelectXMLData.SaveConfiguration("GNSSMode", "value", "1");
                     break;
                 case Global.GNSSType.Float:
                     Global.GNSSMode = Global.GNSSType.Internal;
                     lblGNSSSwitch.Content = "内置";
-                    GlobalUpBoard.SetPinState(31, GlobalUpBoard.LOW);
+                    GlobalUpBoard.SetPinState(Global.NavPort, GlobalUpBoard.LOW);
                     SelectXMLData.SaveConfiguration("GNSSMode", "value", "0");
                     break;
             }

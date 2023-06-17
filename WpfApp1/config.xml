@@ -9,13 +9,13 @@
   <SonarType value="2">
   </SonarType >
 
-  <NavType value="0">
+  <NavType value="3">
   </NavType >
 
   <VisionSwitch value="0">
   </VisionSwitch >
 
-  <NavTelemetry value="COM12">
+  <NavTelemetry value="COM4">
   </NavTelemetry>
 
   <GPSPORT value="COM5">
@@ -66,16 +66,31 @@
   <ServiceMonitor value="0">
   </ServiceMonitor>
 
-  <MountDVL value="0">
+  <MountDVL value="1">
   </MountDVL>
 
-  <DVLPORT value="COM6">
+  <DVLPORT value="COM7">
   </DVLPORT>
 
-  <MountVision value="1">
+  <DVLIP value="192.168.194.95">
+  </DVLIP>
+
+  <DVLIPPORT value="16171">
+  </DVLIPPORT>
+
+  <DVLTYPE value="Serial">
+  </DVLTYPE>
+
+  <DVLNavigationMode value="1">
+  </DVLNavigationMode >
+
+  <MountVision value="0">
   </MountVision>
 
   <FluidDensity value="997.0">
   </FluidDensity>
+
+  <LittlePreview value="1">
+  </LittlePreview>
 
 </Configuration>

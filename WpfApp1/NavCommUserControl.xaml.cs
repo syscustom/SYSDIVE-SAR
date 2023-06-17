@@ -155,11 +155,19 @@ namespace WpfApp1
             slidingCompass1.Pointers[0].Value = GlobalNavigation.nav1.GetHeading();
             lblHeadingInfo.Content = GlobalNavigation.nav1.GetHeading().ToString("0.0");// + "°";
             lblDepthInfo.Content = GlobalNavigation.nav1.GetDepth();// + "米";
-            lblDistance.Content = GlobalNavigation.nav1.Distance.ToString("0.0") + "米";
+            if(GlobalNavigation.nav1.Distance != -1)
+            {
+                lblDistance.Content = GlobalNavigation.nav1.Distance.ToString("0.0") + "米";
+            } 
             lblWayPointName.Content = GlobalNavigation.nav1.SelectedMarker.Name;
-            lblBearing.Content = GlobalNavigation.nav1.Bearing.ToString("0.0") + "°";
+            if(GlobalNavigation.nav1.Bearing != -1)
+            {
+                lblBearing.Content = GlobalNavigation.nav1.Bearing.ToString("0.0") + "°";
+                slidingCompass1.Pointers[1].Value = GlobalNavigation.nav1.Bearing;
+            }
 
-            lblPitchInfo.Content = GlobalNavigation.nav1.GetPitch().ToString("0.0") + "°";
+
+            lblPitchInfo.Content = GlobalNavigation.nav1.GetPitch().ToString("0.0") + "°"; 
             lblRollInfo.Content = GlobalNavigation.nav1.GetRoll().ToString("0.0") + "°";
 
 
@@ -169,6 +177,12 @@ namespace WpfApp1
                     lblAltitude.Content = GlobalDVL.dvl1.altitude.ToString();
                 else
                     lblAltitude.Content = "NaN";
+
+                lblUTMEasting.Content = GlobalDVL.dVLStatus.UTMEasting.ToString();
+                lblUTMNorthing.Content = GlobalDVL.dVLStatus.UTMNorthing.ToString();
+                lblUTMHeadingDistance.Content = GlobalDVL.dVLStatus.HeadingDistance.ToString();
+                lblVx.Content = GlobalDVL.dvl1.vx.ToString();
+                lblVy.Content = GlobalDVL.dvl1.vy.ToString();
             }
 
 

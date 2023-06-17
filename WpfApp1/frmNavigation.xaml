@@ -7,8 +7,11 @@
         mc:Ignorable="d"
         Title="frmNavigation" Height="600" Width="1024"  WindowStyle="None" ResizeMode="NoResize" Background="Black" Closing="Window_Closing" SizeChanged="Window_SizeChanged" Loaded="Window_Loaded">
     <Grid>
-        <ContentControl x:Name="Content_Map" HorizontalAlignment="Left" Height="490" Margin="45,5,0,0" VerticalAlignment="Top" Width="935"/>
-        <Image x:Name="Sonar_Img"  HorizontalAlignment="Left" Height="200" Margin="650,325,0,0" VerticalAlignment="Top" Width="350"/>
+
+        <ContentControl x:Name="Content_Map" HorizontalAlignment="Left" Height="490" Margin="45,5,0,0" VerticalAlignment="Top" Width="935">
+
+        </ContentControl>
+        <Image x:Name="Sonar_Img"  HorizontalAlignment="Left" Height="200" Margin="650,325,0,0" VerticalAlignment="Top" Width="350" Visibility="Hidden"/>
         <ContentControl x:Name="Video_Content" HorizontalAlignment="Left" Height="130" Margin="50,362,0,0" VerticalAlignment="Top" Width="230"/>
         <ContentControl x:Name="Content_Nav" Content="ContentControl" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="100" Width="935" Margin="45,0,44,0"/>
 
@@ -112,7 +115,7 @@
                     </TransformGroup>
                 </Label.RenderTransform>
             </Label>
-            <Label x:Name="lbl_Position" Content="位 置" HorizontalAlignment="Center" Height="34" Margin="-20,30,-20,0" VerticalAlignment="Top" Width="62" RenderTransformOrigin="0.5,0.5" FontSize="20" Foreground="White" FontFamily="SimSun" Grid.Row="3">
+            <Label x:Name="lbl_Position" Content="位 置" HorizontalAlignment="Center" Height="34" Margin="-20,30,-20,0" VerticalAlignment="Top" Width="62" RenderTransformOrigin="0.5,0.5" FontSize="20" Foreground="White" FontFamily="SimSun" Grid.Row="3" MouseUp="Lbl_Position_MouseUp">
                 <Label.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -134,6 +137,79 @@
             </Label>
 
         </Grid>
+
+        <StackPanel x:Name="stackRightArrow1" HorizontalAlignment="Left" Height="35" Margin="505,455,0,0" VerticalAlignment="Top" Width="35" Background="#FF645F5F" Visibility="Hidden">
+            <Image x:Name="imgRightArrow1" HorizontalAlignment="Left" Height="31" Margin="5,2.5,0,0" VerticalAlignment="Top" Width="31" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="-0.099,0.052">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform X="4.681" Y="32.457"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+        </StackPanel>
+        <StackPanel x:Name="stackRightArrow2" HorizontalAlignment="Left" Height="35" Margin="540,455,0,0" VerticalAlignment="Top" Width="35" Background="#FF645F5F" Visibility="Hidden">
+            <Image x:Name="imgRightArrow2" HorizontalAlignment="Left" Height="31" Margin="5,2.5,0,0" VerticalAlignment="Top" Width="31" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="-0.099,0.052">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform X="4.681" Y="32.457"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+
+        </StackPanel>
+        <StackPanel x:Name="stackRightArrow3" HorizontalAlignment="Left" Height="35" Margin="575,455,0,0" VerticalAlignment="Top" Width="35" Background="#FF645F5F" Visibility="Hidden">
+            <Image x:Name="imgRightArrow3" HorizontalAlignment="Left" Height="31" Margin="5,2.5,0,0" VerticalAlignment="Top" Width="31" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="-0.099,0.052" >
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform X="4.681" Y="32.457"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+        </StackPanel>
+
+        <StackPanel x:Name="stackLeftArrow1" HorizontalAlignment="Left" Height="35" Margin="405,455,0,0" VerticalAlignment="Top" Width="35" Background="#FF645F5F" Visibility="Hidden">
+            <Image x:Name="imgLeftArrow1" HorizontalAlignment="Left" Height="31" Margin="34,-2.5,-30,0" VerticalAlignment="Top" Width="31" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="-0.099,0.052">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+        </StackPanel>
+        <StackPanel x:Name="stackLeftArrow2" HorizontalAlignment="Left" Height="35" Margin="370,455,0,0" VerticalAlignment="Top" Width="35" Background="#FF645F5F" Visibility="Hidden">
+            <Image x:Name="imgLeftArrow2" HorizontalAlignment="Left" Height="30" Margin="34,-2.5,-30,0" VerticalAlignment="Top" Width="31" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="-0.099,0.052">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+
+        </StackPanel>
+        <StackPanel x:Name="stackLeftArrow3" HorizontalAlignment="Left" Height="35" Margin="335,455,0,0" VerticalAlignment="Top" Width="35" Background="#FF645F5F" Visibility="Hidden">
+            <Image x:Name="imgLeftArrow3" HorizontalAlignment="Left" Height="31" Margin="34,-2.5,-30,0" VerticalAlignment="Top" Width="31" Source="pack://siteoforigin:,,,/Resources/Down-Arrow.png" RenderTransformOrigin="-0.099,0.052" >
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+        </StackPanel>
 
     </Grid>
 </Window>

@@ -16,109 +16,125 @@ using System.Windows.Threading;
 namespace WpfApp1
 {
     /// <summary>
-    /// frmExitConfirmation.xaml 的交互逻辑
+    /// frmSetDiverPosition.xaml 的交互逻辑
     /// </summary>
-    public partial class frmExitConfirmation : Window
+    public partial class frmSetDiverPosition : Window
     {
-        string para;
         DispatcherTimer tmrButtonCheck = new DispatcherTimer();
         DispatcherTimer tmrFormMonitor = new DispatcherTimer();
         DispatcherTimer tmrTopMost = new DispatcherTimer();
 
-        public frmExitConfirmation()
+        public frmSetDiverPosition()
         {
             InitializeComponent();
-        }
-
-        public frmExitConfirmation(string _para)
-        {
-            InitializeComponent();
-            para = _para;
 
             tmrButtonCheck.Tick += new EventHandler(tmrButtonCheck_Tick);
             tmrButtonCheck.Interval = TimeSpan.FromMilliseconds(5);
             tmrButtonCheck.Start();
 
             tmrFormMonitor.Tick += new EventHandler(tmrFormMonitor_Tick);
-            tmrFormMonitor.Interval = TimeSpan.FromSeconds(1);
+            tmrFormMonitor.Interval = TimeSpan.FromSeconds(2);
 
             tmrTopMost.Tick += new EventHandler(tmrTopMost_Tick);
             tmrTopMost.Interval = TimeSpan.FromSeconds(2);
+        }
+
+        private void Cancel_Press()
+        {
+            DisposeAllComponent();
+            MainWindow mainwindows = new MainWindow();
+            mainwindows.Show();
+            this.Close();
+        }
+
+        private void Lbl_Cancel_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Cancel_Press();
+        }
+
+        private void DisposeAllComponent()
+        {
+            tmrFormMonitor.Start();
         }
 
         void tmrButtonCheck_Tick(object sender, EventArgs e)
         {
             if (this.IsActive)
             {
-                if (GlobalUpBoard.GPIOLevel[0] == 0 && GlobalUpBoard.ButtonState[0] == false) //Pressed Return Button
+                if (GlobalUpBoard.GPIOLevel[0] == 0 && GlobalUpBoard.ButtonState[0] == false)
                 {
+
                     GlobalUpBoard.ButtonState[0] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[0] == 1 && GlobalUpBoard.ButtonState[0] == true)
                     GlobalUpBoard.ButtonState[0] = false;
 
 
-                if (GlobalUpBoard.GPIOLevel[1] == 0 && GlobalUpBoard.ButtonState[1] == false) //Pressed PowerOff Button
+                if (GlobalUpBoard.GPIOLevel[1] == 0 && GlobalUpBoard.ButtonState[1] == false)
                 {
                     GlobalUpBoard.ButtonState[1] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[1] == 1 && GlobalUpBoard.ButtonState[1] == true)
                     GlobalUpBoard.ButtonState[1] = false;
 
-                if (GlobalUpBoard.GPIOLevel[2] == 0 && GlobalUpBoard.ButtonState[2] == false) //Pressed Exit Button
+                if (GlobalUpBoard.GPIOLevel[2] == 0 && GlobalUpBoard.ButtonState[2] == false)
                 {
                     GlobalUpBoard.ButtonState[2] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[2] == 1 && GlobalUpBoard.ButtonState[2] == true)
                     GlobalUpBoard.ButtonState[2] = false;
 
-                if (GlobalUpBoard.GPIOLevel[3] == 0 && GlobalUpBoard.ButtonState[3] == false) //Pressed  Button
+                if (GlobalUpBoard.GPIOLevel[3] == 0 && GlobalUpBoard.ButtonState[3] == false)
                 {
                     GlobalUpBoard.ButtonState[3] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[3] == 1 && GlobalUpBoard.ButtonState[3] == true)
                     GlobalUpBoard.ButtonState[3] = false;
 
-                if (GlobalUpBoard.GPIOLevel[4] == 0 && GlobalUpBoard.ButtonState[4] == false) //Pressed Button
+                if (GlobalUpBoard.GPIOLevel[4] == 0 && GlobalUpBoard.ButtonState[4] == false) //Pressed Start Dive Button
                 {
-                    Exit_Press();
+                    Marker_Press();
                     GlobalUpBoard.ButtonState[4] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[4] == 1 && GlobalUpBoard.ButtonState[4] == true)
                     GlobalUpBoard.ButtonState[4] = false;
 
 
-                if (GlobalUpBoard.GPIOLevel[5] == 0 && GlobalUpBoard.ButtonState[5] == false) //Pressed Home Button
+                if (GlobalUpBoard.GPIOLevel[5] == 0 && GlobalUpBoard.ButtonState[5] == false)
                 {
+
                     GlobalUpBoard.ButtonState[5] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[5] == 1 && GlobalUpBoard.ButtonState[5] == true)
                     GlobalUpBoard.ButtonState[5] = false;
 
-                if (GlobalUpBoard.GPIOLevel[6] == 0 && GlobalUpBoard.ButtonState[6] == false) //Pressed SonarOnOff Button
+                if (GlobalUpBoard.GPIOLevel[6] == 0 && GlobalUpBoard.ButtonState[6] == false)
                 {
+
                     GlobalUpBoard.ButtonState[6] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[6] == 1 && GlobalUpBoard.ButtonState[6] == true)
                     GlobalUpBoard.ButtonState[6] = false;
 
-                if (GlobalUpBoard.GPIOLevel[7] == 0 && GlobalUpBoard.ButtonState[7] == false) //Pressed VisionOnOff Button
+                if (GlobalUpBoard.GPIOLevel[7] == 0 && GlobalUpBoard.ButtonState[7] == false)
                 {
+
                     GlobalUpBoard.ButtonState[7] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[7] == 1 && GlobalUpBoard.ButtonState[7] == true)
                     GlobalUpBoard.ButtonState[7] = false;
 
-                if (GlobalUpBoard.GPIOLevel[8] == 0 && GlobalUpBoard.ButtonState[8] == false) //Pressed  Button
+                if (GlobalUpBoard.GPIOLevel[8] == 0 && GlobalUpBoard.ButtonState[8] == false)
                 {
+
                     GlobalUpBoard.ButtonState[8] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[8] == 1 && GlobalUpBoard.ButtonState[8] == true)
                     GlobalUpBoard.ButtonState[8] = false;
 
-                if (GlobalUpBoard.GPIOLevel[9] == 0 && GlobalUpBoard.ButtonState[9] == false) //Pressed Button
+                if (GlobalUpBoard.GPIOLevel[9] == 0 && GlobalUpBoard.ButtonState[9] == false) //Pressed Cancel Button
                 {
-                    ReturnForm();
+                    Cancel_Press();
                     GlobalUpBoard.ButtonState[9] = true;
                 }
                 if (GlobalUpBoard.GPIOLevel[9] == 1 && GlobalUpBoard.ButtonState[9] == true)
@@ -127,34 +143,57 @@ namespace WpfApp1
             }
         }
 
+        void tmrFormMonitor_Tick(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            tmrFormMonitor.Stop();
+            tmrButtonCheck.Stop();
+            tmrTopMost.Stop();
+        }
+
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             this.Left = 0;
             this.Top = 0;
         }
 
-        private void ReturnForm()
-        {
-            DisposeAllComponent();
-            frmPower frmPower = new frmPower(para);
-            frmPower.Show();
-            this.Close();
-        }
-
-        private void DisposeAllComponent()
-        {
-            tmrFormMonitor.Start();
-        }
-
-        void tmrFormMonitor_Tick(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = Global.TopMost;
             tmrTopMost.Start();
+
+            double decimal_degrees;
+            decimal_degrees = GlobalNavigation.nav1.SelectedMarker.PointLATLNG.Lat;
+            double minutes;
+            minutes = (decimal_degrees - Math.Floor(decimal_degrees)) * 60.0;
+            double seconds;
+            seconds = (minutes - Math.Floor(minutes)) * 60.0;
+            double tenths;
+            tenths = (seconds - Math.Floor(seconds)) * 100;
+
+            decimal_degrees = Math.Floor(decimal_degrees);
+            minutes = Math.Floor(minutes);
+            seconds = Math.Floor(seconds);
+            tenths = Math.Floor(tenths);
+
+            lblMarkerPositionLat.Content = decimal_degrees.ToString() + "°" + minutes.ToString() + "'" + seconds.ToString() + "." + tenths.ToString() + "''" + " " + "N";
+
+            decimal_degrees = GlobalNavigation.nav1.SelectedMarker.PointLATLNG.Lng;
+            minutes = (decimal_degrees - Math.Floor(decimal_degrees)) * 60.0;
+            seconds = (minutes - Math.Floor(minutes)) * 60.0;
+            tenths = (seconds - Math.Floor(seconds)) * 100;
+
+            decimal_degrees = Math.Floor(decimal_degrees);
+            minutes = Math.Floor(minutes);
+            seconds = Math.Floor(seconds);
+            tenths = Math.Floor(tenths);
+
+            lblMarkerPositionLng.Content = decimal_degrees.ToString() + "°" + minutes.ToString() + "'" + seconds.ToString() + "." + tenths.ToString() + "''" + " " + "E";
+
         }
 
         void tmrTopMost_Tick(object sender, EventArgs e)
@@ -163,73 +202,21 @@ namespace WpfApp1
             this.Focus();
         }
 
-        private void Exit_Press()
+        private void Marker_Press()
         {
+            GlobalDVL.dVLStatus.Latitude = GlobalNavigation.nav1.SelectedMarker.PointLATLNG.Lat;
+            GlobalDVL.dVLStatus.Longitude = GlobalNavigation.nav1.SelectedMarker.PointLATLNG.Lng;
+            GlobalDVL.dVLStatus.satellitefix = true;
+
             DisposeAllComponent();
-
-            GlobalNavigation.CloseNav();
-
-            if (Global.MountVision)
-            {
-                GlobalExternal.MinLightBright();
-                if (Global.VisionSwitch)
-                    Global.CloseVideo();
-            }
-
-
-            /*
-            GlobalNavigation.CloseNav();
-
-            if (GlobalSonar.isInstalled && GlobalSonar.SonarSwitch)
-                GlobalSonar.CloseSonar();
-
-            //if (GlobalOculus.isInstalled && GlobalOculus.SonarSwitch)
-            //    GlobalOculus.CloseSonar();
-
-            if (Global.VisionSwitch)
-                Global.CloseVideo();
-
-            GlobalNavigation.CloseGPS();
-
-            GlobalExternal.CloseExternal();
-
-            */
-
-            GlobalDVL.CloseDVL();
-
-            Global.SonarWindow.DisconnectSonar();
-            GlobalUpBoard.CloseUpBoard();
-
-            //GlobalBattery.CloseBattery();
-
-            //Global.EndCallService();
-
-            Global.SonarWindow.DoClose();
-
-            GlobalNavigation.CloseNavComm();
-
-            
-
-            Global.shutdowntype = Global.ShutDownType.Exit;
-            //Environment.Exit(0);
+            MainWindow mainwindows = new MainWindow();
+            mainwindows.Show();
+            this.Close();
         }
 
-
-        private void Lbl_Exit_MouseUp(object sender, MouseButtonEventArgs e)
+        private void Lbl_Marker_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Exit_Press();
-        }
-
-        private void Lbl_Cancel_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ReturnForm();
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            tmrFormMonitor.Stop();
-            tmrButtonCheck.Stop();
-            tmrTopMost.Stop();
+            Marker_Press();
         }
     }
 }
